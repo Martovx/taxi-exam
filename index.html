@@ -1,19 +1,17 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="bg">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Авто изпит (ДАИ)</title>
-
-<!-- PWA -->
 <link rel="manifest" href="manifest.json">
 <meta name="theme-color" content="#2563eb">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="apple-mobile-web-app-title" content="Авто ДАИ">
 <link rel="apple-touch-icon" href="icons/icon-192.png">
-
 <style>
+
 *{box-sizing:border-box;margin:0;padding:0}
 :root{
   --bg:#f7f8fa;--card:#fff;--primary:#2563eb;--pdk:#1d4ed8;
@@ -26,36 +24,38 @@ h1{font-size:1.4rem;font-weight:700;text-align:center;margin-bottom:4px}
 .sub{text-align:center;color:var(--muted);font-size:.9rem;margin-bottom:20px}
 .screen{display:none}.screen.active{display:block}
 
-/* MODULE GRID */
-.mgrid{display:grid;gap:10px;margin-bottom:12px}
+.sec-hdr{font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);margin:18px 0 8px;padding:0 2px 6px;border-bottom:1px solid var(--border)}
+
+.mgrid{display:grid;gap:8px;margin-bottom:4px}
 .mbtn{background:var(--card);border:2px solid var(--border);border-radius:var(--r);padding:14px 16px;cursor:pointer;text-align:left;transition:border-color .15s;width:100%}
 .mbtn:hover{border-color:var(--primary)}
 .mbtn-name{font-weight:600;font-size:.95rem}
 .mbtn-count{font-size:.78rem;color:var(--muted);margin-top:2px}
-.btn-all{background:var(--primary);color:#fff;border:none;border-radius:var(--r);padding:14px;width:100%;cursor:pointer;font-size:.95rem;font-weight:600;margin-top:4px}
+.btn-all{background:var(--primary);color:#fff;border:none;border-radius:var(--r);padding:14px;width:100%;cursor:pointer;font-size:.95rem;font-weight:600;margin-top:14px}
 .btn-all:hover{background:var(--pdk)}
 
-/* MODE SCREEN */
-.mode-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px}
-.mcard{background:var(--card);border:2px solid var(--border);border-radius:var(--r);padding:20px 12px;cursor:pointer;text-align:center;transition:all .15s}
+.mode-btns{display:flex;flex-direction:column;gap:12px;margin-bottom:16px}
+.mcard{background:var(--card);border:2px solid var(--border);border-radius:var(--r);padding:18px 12px;cursor:pointer;text-align:center;transition:all .15s}
 .mcard:hover{border-color:var(--primary);box-shadow:0 2px 8px rgba(37,99,235,.12)}
 .mcard-icon{font-size:2rem;margin-bottom:8px}
 .mcard-name{font-weight:600;font-size:.95rem}
 .mcard-desc{font-size:.78rem;color:var(--muted);margin-top:3px}
-.stats-row{display:flex;gap:10px;margin-bottom:12px}
-.stat{flex:1;background:var(--card);border-radius:var(--r);padding:12px;text-align:center;box-shadow:0 1px 3px rgba(0,0,0,.06)}
-.stat-n{font-size:1.5rem;font-weight:700}
-.stat-n.g{color:var(--ok)}.stat-n.r{color:var(--err)}
-.stat-l{font-size:.72rem;color:var(--muted);margin-top:2px}
+
+.hist-label{font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);margin-bottom:6px}
+.hist-strip{display:flex;gap:6px;margin-bottom:8px;overflow-x:auto;padding-bottom:2px}
+.hist-chip{background:var(--card);border:2px solid var(--border);border-radius:8px;padding:8px 10px;text-align:center;min-width:56px;flex-shrink:0}
+.hist-chip-pct{font-size:1rem;font-weight:700}
+.hist-chip-pct.g{color:var(--ok)}.hist-chip-pct.y{color:#d97706}.hist-chip-pct.r{color:var(--err)}
+.hist-chip-date{font-size:.65rem;color:var(--muted);margin-top:2px}
+.btn-clear-hist{width:100%;padding:9px;border:2px solid var(--border);background:var(--card);border-radius:8px;cursor:pointer;font-size:.82rem;color:var(--muted);font-weight:600;margin-bottom:10px}
+.btn-clear-hist:hover{border-color:var(--err);color:var(--err)}
 .btn-reset{width:100%;padding:11px;border:2px solid var(--border);background:var(--card);border-radius:8px;cursor:pointer;font-size:.88rem;color:var(--muted);font-weight:600}
 .btn-reset:hover{border-color:var(--err);color:var(--err)}
 
-/* PROGRESS BAR */
 .pbar-wrap{background:var(--border);border-radius:999px;height:6px;margin-bottom:6px}
 .pbar{background:var(--primary);height:100%;border-radius:999px;transition:width .3s}
 .pbar-row{display:flex;justify-content:space-between;font-size:.78rem;color:var(--muted);margin-bottom:18px}
 
-/* QUESTION CARD */
 .qcard{background:var(--card);border-radius:var(--r);padding:22px;margin-bottom:14px;box-shadow:0 1px 4px rgba(0,0,0,.06)}
 .qtag{font-size:.68rem;color:var(--primary);font-weight:700;text-transform:uppercase;letter-spacing:.05em;margin-bottom:8px}
 .qtext{font-size:1rem;font-weight:600;line-height:1.55;margin-bottom:18px}
@@ -69,7 +69,6 @@ h1{font-size:1.4rem;font-weight:700;text-align:center;margin-bottom:4px}
 .btn-next{width:100%;padding:13px;background:var(--primary);color:#fff;border:none;border-radius:8px;cursor:pointer;font-size:.95rem;font-weight:600}
 .btn-next:hover{background:var(--pdk)}
 
-/* FLASHCARD */
 .fc-qcard{background:var(--card);border-radius:var(--r);padding:20px 22px;margin-bottom:12px;box-shadow:0 1px 4px rgba(0,0,0,.06)}
 .fc-flip{cursor:pointer;perspective:1000px;margin-bottom:12px;min-height:160px}
 .fc-inner{position:relative;transform-style:preserve-3d;transition:transform .45s;min-height:160px}
@@ -86,11 +85,24 @@ h1{font-size:1.4rem;font-weight:700;text-align:center;margin-bottom:4px}
 .fc-no{background:#fee2e2;color:var(--err)}
 .fc-yes{background:#dcfce7;color:var(--ok)}
 
-/* BACK BUTTON */
+.rt-from-to{background:#eff6ff;border:1px solid #bfdbfe;border-radius:8px;padding:12px 14px;margin-bottom:14px;font-size:.88rem;line-height:1.6}
+.rt-from-to strong{color:var(--primary)}
+.rt-steps-done{display:flex;flex-direction:column;gap:4px;margin-bottom:10px}
+.rt-step-ok{background:#f0fdf4;border:1px solid #86efac;border-radius:6px;padding:6px 12px;font-size:.85rem;color:#15803d;font-weight:600}
+.rt-step-counter{font-size:.78rem;color:var(--muted);margin-bottom:8px;font-weight:600}
+.rt-input-row{display:flex;gap:8px;margin-bottom:8px}
+.rt-input-row input{flex:1;padding:10px 12px;border:2px solid var(--border);border-radius:8px;font-size:.93rem;font-family:inherit;outline:none;background:var(--card);color:var(--text)}
+.rt-input-row input.err{border-color:var(--err);background:#fef2f2}
+.rt-input-row button{padding:10px 14px;background:var(--primary);color:#fff;border:none;border-radius:8px;cursor:pointer;font-size:.9rem;font-weight:600;white-space:nowrap}
+.rt-input-row button:hover{background:var(--pdk)}
+.rt-err-msg{color:var(--err);font-size:.85rem;font-weight:600;margin-bottom:8px;display:none}
+.rt-success{background:#f0fdf4;border:2px solid var(--ok);border-radius:var(--r);padding:18px;margin-bottom:12px;display:none}
+.rt-full-route{font-size:.82rem;color:#166534;line-height:2.2;margin:10px 0;word-break:break-word}
+.rt-info-card{background:#f8fafc;border:1px solid var(--border);border-radius:8px;padding:14px;margin-bottom:14px;color:var(--muted);font-size:.9rem;font-style:italic;text-align:center}
+
 .btn-back{background:none;border:2px solid var(--border);color:var(--muted);font-size:.84rem;padding:8px 14px;border-radius:8px;cursor:pointer;margin-bottom:16px;display:inline-block}
 .btn-back:hover{border-color:var(--primary);color:var(--primary)}
 
-/* COMPLETE */
 .complete{background:var(--card);border-radius:var(--r);padding:32px 24px;text-align:center;box-shadow:0 1px 4px rgba(0,0,0,.06)}
 .c-emoji{font-size:3rem;margin-bottom:10px}
 .c-title{font-size:1.25rem;font-weight:700;margin-bottom:6px}
@@ -99,9 +111,11 @@ h1{font-size:1.4rem;font-weight:700;text-align:center;margin-bottom:4px}
 .btn-restart{width:100%;padding:13px;background:var(--primary);color:#fff;border:none;border-radius:8px;cursor:pointer;font-size:.95rem;font-weight:600;margin-bottom:10px}
 .btn-restart:hover{background:var(--pdk)}
 .btn-back2{width:100%;padding:13px;background:var(--border);color:var(--text);border:none;border-radius:8px;cursor:pointer;font-size:.93rem;font-weight:600}
+
 </style>
 </head>
 <body>
+
 <div class="wrap">
 
 <!-- HOME -->
@@ -117,31 +131,34 @@ h1{font-size:1.4rem;font-weight:700;text-align:center;margin-bottom:4px}
   <button class="btn-back" onclick="show('s-home')">← Назад</button>
   <h1 id="mode-title"></h1>
   <p class="sub" id="mode-sub"></p>
-  <div class="mode-grid">
-    <div class="mcard" onclick="begin('mc')">
+  <div class="mode-btns">
+    <div class="mcard" id="btn-mc" onclick="begin('mc')">
       <div class="mcard-icon">🔢</div>
       <div class="mcard-name">Множествен избор</div>
       <div class="mcard-desc">4 варианта, 1 верен</div>
     </div>
-    <div class="mcard" onclick="begin('fc')">
+    <div class="mcard" id="btn-fc" onclick="begin('fc')">
       <div class="mcard-icon">🃏</div>
       <div class="mcard-name">Флашкарти</div>
       <div class="mcard-desc">Обърни за отговора</div>
     </div>
+    <div class="mcard" id="btn-route" onclick="begin('route')">
+      <div class="mcard-icon">🗺️</div>
+      <div class="mcard-name">Маршрут стъпка по стъпка</div>
+      <div class="mcard-desc">Въведи всяка улица поред</div>
+    </div>
   </div>
-  <div class="stats-row">
-    <div class="stat"><div class="stat-n g" id="s-ok">0</div><div class="stat-l">Верни</div></div>
-    <div class="stat"><div class="stat-n r" id="s-err">0</div><div class="stat-l">Грешни</div></div>
-    <div class="stat"><div class="stat-n" id="s-tot">0</div><div class="stat-l">Въпроси</div></div>
-  </div>
-  <button class="btn-reset" onclick="resetStats()">🔄 Нулирай прогреса за модула</button>
+  <div id="hist-area"></div>
+  <button class="btn-reset" onclick="resetWeights()">🔄 Нулирай прогреса</button>
 </div>
 
-<!-- QUIZ (MC) -->
+<!-- QUIZ -->
 <div id="s-quiz" class="screen">
   <button class="btn-back" onclick="show('s-mode')">← Назад</button>
   <div class="pbar-wrap"><div class="pbar" id="pbar"></div></div>
   <div class="pbar-row"><span id="pbar-label"></span><span id="pbar-score"></span></div>
+
+  <!-- MULTIPLE CHOICE -->
   <div id="mc-area">
     <div class="qcard">
       <div class="qtag" id="q-tag"></div>
@@ -152,13 +169,13 @@ h1{font-size:1.4rem;font-weight:700;text-align:center;margin-bottom:4px}
       <button class="btn-next" onclick="nextQ()">Следващ →</button>
     </div>
   </div>
+
   <!-- FLASHCARD -->
   <div id="fc-area" style="display:none">
     <div class="fc-qcard">
       <div class="qtag" id="fc-tag"></div>
       <div class="qtext" id="fc-q"></div>
     </div>
-    <!-- Typing input -->
     <div id="fc-input-area">
       <textarea id="fc-input" placeholder="Напиши отговора тук..." rows="3"
         style="width:100%;padding:12px 14px;border:2px solid var(--border);border-radius:8px;font-size:.95rem;font-family:inherit;resize:vertical;background:var(--card);color:var(--text);outline:none;margin-bottom:10px"></textarea>
@@ -167,7 +184,6 @@ h1{font-size:1.4rem;font-weight:700;text-align:center;margin-bottom:4px}
         Провери отговора
       </button>
     </div>
-    <!-- Feedback after check -->
     <div id="fc-result" style="display:none;margin-bottom:12px">
       <div id="fc-result-box" style="border-radius:var(--r);padding:16px 18px;margin-bottom:10px">
         <div id="fc-result-icon" style="font-size:1.4rem;margin-bottom:6px"></div>
@@ -176,7 +192,6 @@ h1{font-size:1.4rem;font-weight:700;text-align:center;margin-bottom:4px}
         <div id="fc-ans" style="font-size:.93rem;font-weight:600;color:var(--pdk);line-height:1.5"></div>
       </div>
     </div>
-    <!-- Manual flip fallback -->
     <div id="fc-flip-wrap" style="display:none">
       <div class="fc-flip" id="fc-flip" onclick="flip()">
         <div class="fc-inner">
@@ -196,6 +211,38 @@ h1{font-size:1.4rem;font-weight:700;text-align:center;margin-bottom:4px}
       <button class="fc-yes" onclick="fcMark(true)">✓ Вярно</button>
     </div>
   </div>
+
+  <!-- ROUTE STEP-BY-STEP -->
+  <div id="route-area" style="display:none">
+    <div class="qcard">
+      <div class="qtag" id="rt-tag"></div>
+      <div class="qtext" id="rt-q"></div>
+    </div>
+    <div id="rt-info" style="display:none">
+      <div class="rt-info-card">📝 Устен отговор — опиши маршрута</div>
+      <div class="fc-btns">
+        <button class="fc-no" onclick="routeMark(false)">✗ Не знам</button>
+        <button class="fc-yes" onclick="routeMark(true)">✓ Знам</button>
+      </div>
+    </div>
+    <div id="rt-steps-ui" style="display:none">
+      <div class="rt-from-to" id="rt-from-to"></div>
+      <div class="rt-steps-done" id="rt-steps-done"></div>
+      <div class="rt-step-counter" id="rt-step-counter"></div>
+      <div id="rt-input-area">
+        <div class="rt-input-row">
+          <input type="text" id="rt-input" placeholder="Въведи следващата улица...">
+          <button onclick="checkRouteStep()">Провери →</button>
+        </div>
+        <div id="rt-err-msg" class="rt-err-msg">❌ Грешна улица — опитай пак</div>
+      </div>
+      <div id="rt-success" class="rt-success">
+        <div style="font-size:1.1rem;font-weight:700;color:var(--ok);margin-bottom:8px">✅ Маршрутът е завършен!</div>
+        <div class="rt-full-route" id="rt-full-route"></div>
+        <button class="btn-next" style="margin-top:10px" onclick="routeMark(true)">Следващ →</button>
+      </div>
+    </div>
+  </div>
 </div>
 
 <!-- COMPLETE -->
@@ -210,14 +257,11 @@ h1{font-size:1.4rem;font-weight:700;text-align:center;margin-bottom:4px}
   </div>
 </div>
 
-</div><!-- /wrap -->
+</div>
 <script>
 // ============================================================
 // DATA
 // ============================================================
-// type: 'mc' = multiple choice (default), 'fc' = flashcard only
-// For mc: opts[] + correct (index)
-// For fc: answer (string)
 const ALL = [
 // ═══════════ МОДУЛ 1: ОРГАНИЗАЦИЯ ═══════════
 {id:1,m:'Модул 1: Организация',q:'Минималният възраст на водачите, осъществяващи таксиметров превоз е:',o:['23 години','21 години','18 години','25 години'],c:1},
@@ -338,10 +382,12 @@ const ALL = [
 {id:143,m:'Модул 5: Безопасност',q:'При ПТП само с имуществени вреди водачът уведомява:',o:['Министерство на транспорта','Министерство на вътрешните работи'],c:1},
 
 // ═══════════ МАРШРУТИ ═══════════
+// Маршрути 1–4 (от Изпитни адреси 3) — устен отговор, без предписан маршрут
 {id:300,m:'Маршрути',q:'От Министерство на транспорта (МТС) до хотел „Драгалевски"',a:'Устен отговор — опиши маршрута по познати улици',type:'fc'},
 {id:301,m:'Маршрути',q:'От 07 РУ – СДВР до Централна Ж.П. Гара – София',a:'Устен отговор — опиши маршрута по познати улици',type:'fc'},
 {id:302,m:'Маршрути',q:'От Аерогара София – Терминал 2 до болница „Цар Борис III" гр. София',a:'Устен отговор — опиши маршрута по познати улици',type:'fc'},
 {id:303,m:'Маршрути',q:'От Аерогара София – Терминал 1 до хотел „Надежда" гр. София',a:'Устен отговор — опиши маршрута по познати улици',type:'fc'},
+// Маршрути 5–10 (от Изпитни адреси 1) — с предписан маршрут
 {id:305,m:'Маршрути',q:'От Министерство на околната среда и водите до болница „Токуда" /Аджъбадем Сити Клиник/ — вход от ул. „Атанас Дуков"',a:'бул. „Княгиня Мария Луиза" → пл. „Независимост" → пл. „Атанас Буров" → пл. „Княз Александър I" → бул. „Цар Освободител" → пл. „Орлов Мост" → бул. „Цариградско Шосе" → бул. „Пейо К. Яворов" → бул. „Никола Й. Вапцаров" → ул. „Атанас Дуков"',type:'fc'},
 {id:306,m:'Маршрути',q:'От „Парадайс Център" до Централна Автогара – София',a:'ул. „Хенри Ибсен" → бул. „Черни връх" → ул. „Проф. Фритьоф Нансен" → ул. „Любен Каравелов" → ул. „Г. С. Раковски" → ул. „Козлодуй" → ул. „Будапеща" → ул. „Клокотница" → ул. „Веслец"',type:'fc'},
 {id:307,m:'Маршрути',q:'От Централна Ж.П. Гара – София до хотел „АЯКС" гр. София',a:'бул. „Княгиня Мария Луиза" → бул. „Христо Ботев" → бул. „Ген. Скобелев" → ул. „Проф. Фритьоф Нансен" → бул. „Черни връх" → бул. „Свети Наум" → бул. „Христо Смирненски" → пл. „Велчова Завера" → ул. „Стоян Михайловски" → бул. „Симеоновско шосе" → ул. „Асен Разцветников" → ул. „Ангел Каралийчев"',type:'fc'},
@@ -405,66 +451,92 @@ const ALL = [
 // ============================================================
 // APP STATE
 // ============================================================
-let curMod = null;
-let modKey = '';
-let mode = 'mc';
-let weights = {};
-let queue = [];
-let qIdx = 0;
-let sessOk = 0;
-let sessErr = 0;
-let sessTotal = 0;
-let fcFlipped = false;
+let curMod = null, modKey = '', curSection = '', mode = 'mc';
+let weights = {}, queue = [], qIdx = 0;
+let sessOk = 0, sessErr = 0, sessTotal = 0;
+let fcFlipped = false, routeSteps = [], routeStepIdx = 0;
 
 // ============================================================
 // MODULE DEFINITIONS
 // ============================================================
 const MODULES = [
-  {key:'mod1', name:'Модул 1: Организация', filter:q=>q.m.startsWith('Модул 1')},
-  {key:'mod2', name:'Модул 2: Експлоатация', filter:q=>q.m.startsWith('Модул 2')},
-  {key:'mod3', name:'Модул 3: ЕТАФП', filter:q=>q.m.startsWith('Модул 3')},
-  {key:'mod4', name:'Модул 4: Адм. отговорност', filter:q=>q.m.startsWith('Модул 4')},
-  {key:'mod5', name:'Модул 5: Безопасност', filter:q=>q.m.startsWith('Модул 5')},
-  {key:'marshruti', name:'Маршрути', filter:q=>q.m==='Маршрути'},
-  {key:'addr_min', name:'Адреси: Министерства', filter:q=>q.m==='Адреси: Министерства'},
-  {key:'addr_imp', name:'Адреси: Важни места', filter:q=>q.m==='Адреси: Важни места'},
-  {key:'addr_hosp', name:'Адреси: Болници', filter:q=>q.m==='Адреси: Болници'},
-  {key:'addr_uni', name:'Адреси: Университети', filter:q=>q.m==='Адреси: Университети'},
-  {key:'addr_sport', name:'Адреси: Спортни обекти', filter:q=>q.m==='Адреси: Спортни обекти'},
+  {key:'mod1',      name:'Модул 1: Организация',       section:'exam',  filter:q=>q.m.startsWith('Модул 1')},
+  {key:'mod2',      name:'Модул 2: Експлоатация',       section:'exam',  filter:q=>q.m.startsWith('Модул 2')},
+  {key:'mod3',      name:'Модул 3: ЕТАФП',              section:'exam',  filter:q=>q.m.startsWith('Модул 3')},
+  {key:'mod4',      name:'Модул 4: Адм. отговорност',   section:'exam',  filter:q=>q.m.startsWith('Модул 4')},
+  {key:'mod5',      name:'Модул 5: Безопасност',         section:'exam',  filter:q=>q.m.startsWith('Модул 5')},
+  {key:'marshruti', name:'Маршрути',                    section:'route', filter:q=>q.m==='Маршрути'},
+  {key:'addr_min',  name:'Адреси: Министерства',        section:'addr',  filter:q=>q.m==='Адреси: Министерства'},
+  {key:'addr_imp',  name:'Адреси: Важни места',         section:'addr',  filter:q=>q.m==='Адреси: Важни места'},
+  {key:'addr_hosp', name:'Адреси: Болници',             section:'addr',  filter:q=>q.m==='Адреси: Болници'},
+  {key:'addr_uni',  name:'Адреси: Университети',        section:'addr',  filter:q=>q.m==='Адреси: Университети'},
+  {key:'addr_sport',name:'Адреси: Спортни обекти',      section:'addr',  filter:q=>q.m==='Адреси: Спортни обекти'},
 ];
+
+// ============================================================
+// HISTORY
+// ============================================================
+function getHistory(key){
+  try{ return JSON.parse(localStorage.getItem('history_'+key)||'[]'); } catch(e){ return []; }
+}
+function saveHistory(key, result){
+  let h = getHistory(key);
+  h.unshift(result);
+  if(h.length > 5) h = h.slice(0,5);
+  localStorage.setItem('history_'+key, JSON.stringify(h));
+}
+function clearHistory(){
+  localStorage.removeItem('history_'+modKey);
+  renderHistory();
+}
+function renderHistory(){
+  const h = getHistory(modKey);
+  const area = document.getElementById('hist-area');
+  if(!h.length){ area.innerHTML=''; return; }
+  const chips = h.map(s=>{
+    const d = new Date(s.date);
+    const ds = d.getDate()+'.'+(d.getMonth()+1);
+    const cls = s.pct>=80?'g':s.pct>=60?'y':'r';
+    return '<div class="hist-chip"><div class="hist-chip-pct '+cls+'">'+s.pct+'%</div><div class="hist-chip-date">'+ds+'</div></div>';
+  }).join('');
+  area.innerHTML = '<div class="hist-label">Последни сесии</div>'
+    +'<div class="hist-strip">'+chips+'</div>'
+    +'<button class="btn-clear-hist" onclick="clearHistory()">🗑 Изчисти историята</button>';
+}
+
+// ============================================================
+// WEIGHTS
+// ============================================================
+function getWeights(key){
+  try{ return JSON.parse(localStorage.getItem('weights_'+key)||'{}'); } catch(e){ return {}; }
+}
+function saveWeights(key,w){ localStorage.setItem('weights_'+key, JSON.stringify(w)); }
+function resetWeights(){ localStorage.removeItem('weights_'+modKey); weights={}; }
 
 // ============================================================
 // INIT
 // ============================================================
 function init(){
   const grid = document.getElementById('module-grid');
-  MODULES.forEach(mod=>{
-    const qs = ALL.filter(mod.filter);
-    const stats = getStats(mod.key);
-    const btn = document.createElement('button');
-    btn.className = 'mbtn';
-    btn.innerHTML = `<div class="mbtn-name">${mod.name}</div>
-      <div class="mbtn-count">${qs.length} въпроса${stats.total>0?' · '+stats.ok+' верни, '+stats.err+' грешни':''}</div>`;
-    btn.onclick = ()=>selectModule(mod);
-    grid.appendChild(btn);
+  [{label:'Изпитни въпроси',key:'exam'},{label:'Адреси',key:'addr'},{label:'Маршрути',key:'route'}]
+  .forEach(sec=>{
+    const mods = MODULES.filter(m=>m.section===sec.key);
+    if(!mods.length) return;
+    const hdr = document.createElement('div');
+    hdr.className='sec-hdr'; hdr.textContent=sec.label;
+    grid.appendChild(hdr);
+    mods.forEach(mod=>{
+      const qs = ALL.filter(mod.filter);
+      const hist = getHistory(mod.key);
+      const lastTxt = hist.length ? ' · Последно: '+hist[0].pct+'%' : '';
+      const btn = document.createElement('button');
+      btn.className='mbtn';
+      btn.innerHTML='<div class="mbtn-name">'+mod.name+'</div>'
+        +'<div class="mbtn-count">'+qs.length+' въпроса'+lastTxt+'</div>';
+      btn.onclick=()=>selectModule(mod);
+      grid.appendChild(btn);
+    });
   });
-}
-
-function getStats(key){
-  try{
-    const s = JSON.parse(localStorage.getItem('stats_'+key)||'{"ok":0,"err":0,"total":0}');
-    return s;
-  }catch(e){return{ok:0,err:0,total:0};}
-}
-function saveStats(key,ok,err,total){
-  localStorage.setItem('stats_'+key,JSON.stringify({ok,err,total}));
-}
-function getWeights(key){
-  try{return JSON.parse(localStorage.getItem('weights_'+key)||'{}');}
-  catch(e){return{};}
-}
-function saveWeights(key,w){
-  localStorage.setItem('weights_'+key,JSON.stringify(w));
 }
 
 // ============================================================
@@ -474,143 +546,82 @@ function show(id){
   document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
   document.getElementById(id).classList.add('active');
 }
-
+function setModeBtns(section){
+  document.getElementById('btn-mc').style.display    = (section==='exam'||section==='all')?'':'none';
+  document.getElementById('btn-fc').style.display    = (section==='addr'||section==='all')?'':'none';
+  document.getElementById('btn-route').style.display = section==='route'?'':'none';
+}
 function selectModule(mod){
-  curMod = ALL.filter(mod.filter);
-  modKey = mod.key;
-  weights = getWeights(modKey);
-  const stats = getStats(modKey);
-  document.getElementById('mode-title').textContent = mod.name;
-  document.getElementById('mode-sub').textContent = curMod.length+' въпроса';
-  document.getElementById('s-ok').textContent = stats.ok;
-  document.getElementById('s-err').textContent = stats.err;
-  document.getElementById('s-tot').textContent = stats.total;
-  show('s-mode');
+  curMod=ALL.filter(mod.filter); modKey=mod.key; curSection=mod.section;
+  weights=getWeights(modKey);
+  document.getElementById('mode-title').textContent=mod.name;
+  document.getElementById('mode-sub').textContent=curMod.length+' въпроса';
+  setModeBtns(curSection); renderHistory(); show('s-mode');
 }
-
 function startAll(){
-  curMod = [...ALL];
-  modKey = 'all';
-  weights = getWeights(modKey);
-  const stats = getStats(modKey);
-  document.getElementById('mode-title').textContent = 'Всички въпроси';
-  document.getElementById('mode-sub').textContent = curMod.length+' въпроса';
-  document.getElementById('s-ok').textContent = stats.ok;
-  document.getElementById('s-err').textContent = stats.err;
-  document.getElementById('s-tot').textContent = stats.total;
-  show('s-mode');
-}
-
-function resetStats(){
-  localStorage.removeItem('stats_'+modKey);
-  localStorage.removeItem('weights_'+modKey);
-  weights = {};
-  document.getElementById('s-ok').textContent = '0';
-  document.getElementById('s-err').textContent = '0';
-  document.getElementById('s-tot').textContent = '0';
+  curMod=[...ALL]; modKey='all'; curSection='all';
+  weights=getWeights(modKey);
+  document.getElementById('mode-title').textContent='Всички въпроси';
+  document.getElementById('mode-sub').textContent=curMod.length+' въпроса';
+  setModeBtns('all'); renderHistory(); show('s-mode');
 }
 
 // ============================================================
-// SESSION START
+// SESSION
 // ============================================================
 function begin(m){
-  mode = m;
-  const allAddress = curMod.length > 0 && curMod.every(q=>q.type==='fc');
-  if(allAddress) mode = 'fc';
-  sessOk = 0; sessErr = 0; sessTotal = 0;
-  buildQueue();
-  qIdx = 0;
-  show('s-quiz');
-  if(mode==='mc') showMC();
-  else showFC();
+  mode=m; sessOk=0; sessErr=0; sessTotal=0;
+  buildQueue(); qIdx=0; show('s-quiz'); renderCurrent();
 }
-
 function buildQueue(){
-  queue = [];
-  curMod.forEach(q=>{
-    const w = weights[q.id] || 1;
-    const reps = Math.ceil(w);
-    for(let i=0;i<reps;i++) queue.push(q);
-  });
-  for(let i=queue.length-1;i>0;i--){
-    const j = Math.floor(Math.random()*(i+1));
-    [queue[i],queue[j]]=[queue[j],queue[i]];
-  }
-  const MAX = Math.min(queue.length, curMod.length*2);
-  queue = queue.slice(0, MAX);
+  queue=[];
+  curMod.forEach(q=>{ const w=weights[q.id]||1; for(let i=0;i<Math.ceil(w);i++) queue.push(q); });
+  for(let i=queue.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [queue[i],queue[j]]=[queue[j],queue[i]]; }
+  queue=queue.slice(0,Math.min(queue.length,curMod.length*2));
 }
-
+function renderCurrent(){
+  if(mode==='route') showRoute(); else if(mode==='mc') showMC(); else showFC();
+}
 function updateProgress(){
-  const total = queue.length;
-  const done = qIdx;
-  const pct = total>0 ? Math.round(done/total*100):0;
-  document.getElementById('pbar').style.width = pct+'%';
-  document.getElementById('pbar-label').textContent = (done)+' / '+total;
-  document.getElementById('pbar-score').textContent = '✓ '+sessOk+' · ✗ '+sessErr;
+  const pct=queue.length?Math.round(qIdx/queue.length*100):0;
+  document.getElementById('pbar').style.width=pct+'%';
+  document.getElementById('pbar-label').textContent=qIdx+' / '+queue.length;
+  document.getElementById('pbar-score').textContent='✓ '+sessOk+' · ✗ '+sessErr;
+}
+function hideAll(){
+  ['mc-area','fc-area','route-area'].forEach(id=>document.getElementById(id).style.display='none');
 }
 
 // ============================================================
 // MULTIPLE CHOICE
 // ============================================================
 function showMC(){
-  if(qIdx >= queue.length){ sessionDone(); return; }
-  const q = queue[qIdx];
-
-  if(q.type==='fc'){
-    document.getElementById('mc-area').style.display='none';
-    document.getElementById('fc-area').style.display='';
-    updateProgress();
-    renderFC(q);
-    return;
-  }
-
-  document.getElementById('mc-area').style.display='';
-  document.getElementById('fc-area').style.display='none';
-  document.getElementById('q-tag').textContent = q.m;
-  document.getElementById('q-text').textContent = q.q;
+  if(qIdx>=queue.length){ sessionDone(); return; }
+  const q=queue[qIdx];
+  if(q.type==='fc'){ hideAll(); document.getElementById('fc-area').style.display=''; updateProgress(); renderFC(q); return; }
+  hideAll(); document.getElementById('mc-area').style.display='';
+  document.getElementById('q-tag').textContent=q.m;
+  document.getElementById('q-text').textContent=q.q;
   document.getElementById('nav-next').style.display='none';
   updateProgress();
-
-  const opts = document.getElementById('q-opts');
-  opts.innerHTML='';
-  const options = [...q.o];
-  const correctText = options[q.c];
-  const labels = ['А', 'Б', 'В', 'Г'];
-
-  const shuffled = options.map((txt)=>({txt}));
-  for(let i=shuffled.length-1;i>0;i--){
-    const j=Math.floor(Math.random()*(i+1));
-    [shuffled[i],shuffled[j]]=[shuffled[j],shuffled[i]];
-  }
-
-  shuffled.forEach(({txt}, idx)=>{
-    const btn = document.createElement('button');
-    btn.className='opt';
-    btn.textContent = labels[idx]+'. '+txt;
-    btn.dataset.value = txt;
-    btn.onclick = ()=>answerMC(btn, txt===correctText, opts, correctText);
+  const opts=document.getElementById('q-opts'); opts.innerHTML='';
+  const correctText=q.o[q.c]; const labels=['А','Б','В','Г'];
+  const shuffled=q.o.map(txt=>({txt}));
+  for(let i=shuffled.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [shuffled[i],shuffled[j]]=[shuffled[j],shuffled[i]]; }
+  shuffled.forEach(({txt},idx)=>{
+    const btn=document.createElement('button');
+    btn.className='opt'; btn.textContent=labels[idx]+'. '+txt; btn.dataset.value=txt;
+    btn.onclick=()=>answerMC(btn,txt===correctText,opts,correctText);
     opts.appendChild(btn);
   });
 }
-
-function answerMC(btn, correct, container, correctText){
-  container.querySelectorAll('.opt').forEach(b=>{
-    b.disabled=true;
-    if(b.dataset.value===correctText) b.classList.add('ok');
-  });
+function answerMC(btn,correct,container,correctText){
+  container.querySelectorAll('.opt').forEach(b=>{ b.disabled=true; if(b.dataset.value===correctText) b.classList.add('ok'); });
   if(!correct) btn.classList.add('err');
-
-  const q = queue[qIdx];
-  if(correct){
-    sessOk++;
-    weights[q.id] = Math.max(0.5, (weights[q.id]||1)*0.7);
-  } else {
-    sessErr++;
-    weights[q.id] = Math.min(5, (weights[q.id]||1)+1.5);
-  }
-  sessTotal++;
-  saveWeights(modKey, weights);
-  updateProgress();
+  const q=queue[qIdx];
+  if(correct){ sessOk++; weights[q.id]=Math.max(0.5,(weights[q.id]||1)*0.7); }
+  else{ sessErr++; weights[q.id]=Math.min(5,(weights[q.id]||1)+1.5); }
+  sessTotal++; saveWeights(modKey,weights); updateProgress();
   document.getElementById('nav-next').style.display='block';
 }
 
@@ -618,51 +629,42 @@ function answerMC(btn, correct, container, correctText){
 // FLASHCARD
 // ============================================================
 function showFC(){
-  if(qIdx >= queue.length){ sessionDone(); return; }
-  const q = queue[qIdx];
-  document.getElementById('mc-area').style.display='none';
-  document.getElementById('fc-area').style.display='';
-  updateProgress();
-  renderFC(q);
+  if(qIdx>=queue.length){ sessionDone(); return; }
+  const q=queue[qIdx]; hideAll();
+  document.getElementById('fc-area').style.display=''; updateProgress(); renderFC(q);
 }
-
 function renderFC(q){
-  fcFlipped = false;
-  document.getElementById('fc-tag').textContent = q.m;
-  document.getElementById('fc-q').textContent = q.q;
-  const ans = q.type==='fc' ? q.a : q.o[q.c];
-  document.getElementById('fc-ans').textContent = ans;
-  if(document.getElementById('fc-ans-flip'))
-    document.getElementById('fc-ans-flip').textContent = ans;
-  document.getElementById('fc-result').style.display = 'none';
-  document.getElementById('fc-btns').style.display = 'none';
-  const flip = document.getElementById('fc-flip');
-  if(flip) flip.classList.remove('flipped');
-
+  fcFlipped=false;
+  document.getElementById('fc-tag').textContent=q.m;
+  document.getElementById('fc-q').textContent=q.q;
+  const ans=q.type==='fc'?q.a:q.o[q.c];
+  document.getElementById('fc-ans').textContent=ans;
+  const flip2=document.getElementById('fc-ans-flip'); if(flip2) flip2.textContent=ans;
+  document.getElementById('fc-result').style.display='none';
+  document.getElementById('fc-btns').style.display='none';
+  const flipEl=document.getElementById('fc-flip'); if(flipEl) flipEl.classList.remove('flipped');
   if(q.type==='fc'){
-    document.getElementById('fc-input').value = '';
-    document.getElementById('fc-input').disabled = false;
-    document.getElementById('fc-input').style.borderColor = 'var(--border)';
-    document.getElementById('fc-check-btn').style.display = 'block';
-    document.getElementById('fc-input-area').style.display = 'block';
-    document.getElementById('fc-flip-wrap').style.display = 'none';
-    setTimeout(()=>document.getElementById('fc-input').focus(), 100);
+    document.getElementById('fc-input').value='';
+    document.getElementById('fc-input').disabled=false;
+    document.getElementById('fc-input').style.borderColor='var(--border)';
+    document.getElementById('fc-check-btn').style.display='block';
+    document.getElementById('fc-input-area').style.display='block';
+    document.getElementById('fc-flip-wrap').style.display='none';
+    setTimeout(()=>document.getElementById('fc-input').focus(),100);
   } else {
-    document.getElementById('fc-input-area').style.display = 'none';
-    document.getElementById('fc-flip-wrap').style.display = 'block';
+    document.getElementById('fc-input-area').style.display='none';
+    document.getElementById('fc-flip-wrap').style.display='block';
   }
 }
-
 function checkFCInput(){
-  const q = queue[qIdx];
-  const ans = q.type==='fc' ? q.a : q.o[q.c];
-  const userVal = document.getElementById('fc-input').value.trim();
-  const correct = userVal.toLowerCase() === ans.toLowerCase();
-  document.getElementById('fc-input').disabled = true;
-  document.getElementById('fc-check-btn').style.display = 'none';
-  const box = document.getElementById('fc-result-box');
-  const icon = document.getElementById('fc-result-icon');
-  const msg = document.getElementById('fc-result-msg');
+  const q=queue[qIdx]; const ans=q.type==='fc'?q.a:q.o[q.c];
+  const val=document.getElementById('fc-input').value.trim();
+  const correct=val.toLowerCase()===ans.toLowerCase();
+  document.getElementById('fc-input').disabled=true;
+  document.getElementById('fc-check-btn').style.display='none';
+  const box=document.getElementById('fc-result-box');
+  const icon=document.getElementById('fc-result-icon');
+  const msg=document.getElementById('fc-result-msg');
   if(correct){
     box.style.background='#f0fdf4'; box.style.border='2px solid var(--ok)';
     icon.textContent='✅'; msg.style.color='var(--ok)'; msg.textContent='Верен отговор!';
@@ -670,77 +672,121 @@ function checkFCInput(){
   } else {
     box.style.background='#fef2f2'; box.style.border='2px solid var(--err)';
     icon.textContent='❌'; msg.style.color='var(--err)';
-    msg.textContent = userVal ? 'Грешен отговор' : 'Не е въведен отговор';
+    msg.textContent=val?'Грешен отговор':'Не е въведен отговор';
     document.getElementById('fc-input').style.borderColor='var(--err)';
   }
   document.getElementById('fc-result').style.display='block';
   document.getElementById('fc-btns').style.display='flex';
 }
-
 function flip(){
-  if(fcFlipped) return;
-  fcFlipped = true;
+  if(fcFlipped) return; fcFlipped=true;
   document.getElementById('fc-flip').classList.add('flipped');
-  setTimeout(()=>{ document.getElementById('fc-btns').style.display='flex'; }, 300);
+  setTimeout(()=>{ document.getElementById('fc-btns').style.display='flex'; },300);
 }
-
 function fcMark(correct){
-  const q = queue[qIdx];
-  if(correct){
-    sessOk++;
-    weights[q.id] = Math.max(0.5,(weights[q.id]||1)*0.7);
+  const q=queue[qIdx];
+  if(correct){ sessOk++; weights[q.id]=Math.max(0.5,(weights[q.id]||1)*0.7); }
+  else{ sessErr++; weights[q.id]=Math.min(5,(weights[q.id]||1)+1.5); }
+  sessTotal++; saveWeights(modKey,weights); qIdx++; updateProgress();
+  if(mode==='mc') showMC(); else showFC();
+}
+
+// ============================================================
+// ROUTE STEP-BY-STEP
+// ============================================================
+function showRoute(){
+  if(qIdx>=queue.length){ sessionDone(); return; }
+  const q=queue[qIdx]; hideAll();
+  document.getElementById('route-area').style.display=''; updateProgress(); renderRoute(q);
+}
+function renderRoute(q){
+  document.getElementById('rt-tag').textContent=q.m;
+  document.getElementById('rt-q').textContent=q.q;
+  const hasSteps=q.a&&q.a.includes(' → ');
+  if(!hasSteps){
+    document.getElementById('rt-info').style.display='';
+    document.getElementById('rt-steps-ui').style.display='none';
   } else {
-    sessErr++;
-    weights[q.id] = Math.min(5,(weights[q.id]||1)+1.5);
+    routeSteps=q.a.split(' → ').map(s=>s.trim()); routeStepIdx=0;
+    document.getElementById('rt-info').style.display='none';
+    document.getElementById('rt-steps-ui').style.display='';
+    document.getElementById('rt-err-msg').style.display='none';
+    document.getElementById('rt-success').style.display='none';
+    document.getElementById('rt-input-area').style.display='block';
+    const inp=document.getElementById('rt-input'); inp.value=''; inp.className='';
+    const raw=q.q; const midIdx=raw.indexOf(' до ');
+    const fromTxt=midIdx>0?raw.slice(0,midIdx).replace(/^От /,''):raw;
+    const toTxt=midIdx>0?raw.slice(midIdx+4):'';
+    document.getElementById('rt-from-to').innerHTML='<strong>От:</strong> '+fromTxt+'<br><strong>До:</strong> '+toTxt;
+    updateRouteDisplay();
+    setTimeout(()=>inp.focus(),100);
   }
-  sessTotal++;
-  saveWeights(modKey,weights);
-  qIdx++;
-  updateProgress();
-  if(mode==='mc') showMC();
-  else showFC();
 }
-
-function nextQ(){
-  qIdx++;
-  if(mode==='mc') showMC();
-  else showFC();
+function updateRouteDisplay(){
+  const list=document.getElementById('rt-steps-done'); list.innerHTML='';
+  for(let i=0;i<routeStepIdx;i++){
+    const d=document.createElement('div'); d.className='rt-step-ok';
+    d.textContent=(i+1)+'. '+routeSteps[i]; list.appendChild(d);
+  }
+  document.getElementById('rt-step-counter').textContent=
+    routeStepIdx<routeSteps.length?'Стъпка '+(routeStepIdx+1)+' от '+routeSteps.length:'';
+}
+function checkRouteStep(){
+  const inp=document.getElementById('rt-input'); const val=inp.value.trim();
+  if(!val) return;
+  const expected=routeSteps[routeStepIdx];
+  if(val.toLowerCase()===expected.toLowerCase()){
+    inp.value=''; inp.className='';
+    document.getElementById('rt-err-msg').style.display='none';
+    routeStepIdx++; updateRouteDisplay();
+    if(routeStepIdx>=routeSteps.length){
+      document.getElementById('rt-input-area').style.display='none';
+      document.getElementById('rt-full-route').textContent=routeSteps.map((s,i)=>(i+1)+'. '+s).join('  →  ');
+      document.getElementById('rt-success').style.display='';
+    } else { inp.focus(); }
+  } else { inp.className='err'; document.getElementById('rt-err-msg').style.display=''; }
+}
+function routeMark(correct){
+  const q=queue[qIdx];
+  if(correct){ sessOk++; weights[q.id]=Math.max(0.5,(weights[q.id]||1)*0.7); }
+  else{ sessErr++; weights[q.id]=Math.min(5,(weights[q.id]||1)+1.5); }
+  sessTotal++; saveWeights(modKey,weights); qIdx++; updateProgress(); showRoute();
 }
 
 // ============================================================
-// SESSION COMPLETE
+// HELPERS
 // ============================================================
+function nextQ(){ qIdx++; renderCurrent(); }
+
 function sessionDone(){
-  const pct = sessTotal>0 ? Math.round(sessOk/sessTotal*100):0;
-  let emoji = pct>=80?'🎉':pct>=60?'💪':'📖';
-  document.getElementById('c-emoji').textContent = emoji;
-  document.getElementById('c-score').textContent = sessOk+' / '+sessTotal;
-  document.getElementById('c-detail').textContent = pct+'% верни · '+sessErr+' грешни';
-  const prev = getStats(modKey);
-  saveStats(modKey, prev.ok+sessOk, prev.err+sessErr, prev.total+sessTotal);
+  const pct=sessTotal?Math.round(sessOk/sessTotal*100):0;
+  saveHistory(modKey,{date:new Date().toISOString(),ok:sessOk,err:sessErr,total:sessTotal,pct});
+  document.getElementById('c-emoji').textContent=pct>=80?'🎉':pct>=60?'💪':'📖';
+  document.getElementById('c-score').textContent=sessOk+' / '+sessTotal;
+  document.getElementById('c-detail').textContent=pct+'% верни · '+sessErr+' грешни';
   show('s-complete');
 }
-
 function restartSession(){ begin(mode); }
 
 document.addEventListener('DOMContentLoaded',()=>{
   document.getElementById('fc-input').addEventListener('keydown',function(e){
     if(e.key==='Enter'&&!e.shiftKey){
-      var btn=document.getElementById('fc-check-btn');
+      const btn=document.getElementById('fc-check-btn');
       if(btn&&btn.style.display!=='none'){ e.preventDefault(); checkFCInput(); }
     }
   });
+  document.getElementById('rt-input').addEventListener('keydown',function(e){
+    if(e.key==='Enter'){ e.preventDefault(); checkRouteStep(); }
+  });
 });
 
-// Service Worker registration
+init();
 if('serviceWorker' in navigator){
-  window.addEventListener('load', ()=>{
-    navigator.serviceWorker.register('/taxi-exam/sw.js', {scope: '/taxi-exam/'})
-      .catch(()=>{});
+  window.addEventListener('load',()=>{
+    navigator.serviceWorker.register('/taxi-exam/sw.js',{scope:'/taxi-exam/'}).catch(()=>{});
   });
 }
 
-init();
 </script>
 </body>
 </html>
