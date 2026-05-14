@@ -1,7 +1,7 @@
 {
-  "name": "Таксиметров Изпит",
-  "short_name": "Такси Изпит",
-  "description": "Практика за таксиметров изпит — София",
+  "name": "Авто изпит (ДАИ)",
+  "short_name": "Авто ДАИ",
+  "description": "Практика за таксиметров изпит — ДАИ София",
   "start_url": "/taxi-exam/",
   "scope": "/taxi-exam/",
   "display": "standalone",
