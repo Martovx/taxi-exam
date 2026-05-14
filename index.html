@@ -8,7 +8,8 @@
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="default">
   <meta name="apple-mobile-web-app-title" content="Авто ДАИ">
-  <link rel="apple-touch-icon" href="/taxi-exam/icons/icon-192.png"><title>Авто изпит (ДАИ)</title>
+  <link rel="apple-touch-icon" href="/taxi-exam/icons/icon-192.png">
+<title>Авто изпит (ДАИ)</title>
 <style>
 
 *{box-sizing:border-box;margin:0;padding:0}
@@ -698,7 +699,7 @@ function fcMark(correct){
 // ROUTE STEP-BY-STEP
 // ============================================================
 function normalizeStreet(s){
-  return s.toLowerCase().replace(/[„”«»””’’””’’]/g,’’).replace(/\s+/g,’ ‘).trim();
+  return s.toLowerCase().replace(/[„“”"«»‘’]/g,[].join()).replace(/\s+/g,String.fromCharCode(32)).trim();
 }
 function showRoute(){
   if(qIdx>=queue.length){ sessionDone(); return; }
@@ -823,5 +824,6 @@ init();
 if('serviceWorker' in navigator){
   navigator.serviceWorker.register('/taxi-exam/sw.js');
 }
-</script></body>
+</script>
+</body>
 </html>
