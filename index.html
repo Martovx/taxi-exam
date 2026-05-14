@@ -763,7 +763,8 @@ function buildQueue(){
   queue=[];
   curMod.forEach(q=>{ const w=weights[q.id]||1; for(let i=0;i<Math.ceil(w);i++) queue.push(q); });
   for(let i=queue.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [queue[i],queue[j]]=[queue[j],queue[i]]; }
-  queue=queue.slice(0,Math.min(queue.length,curMod.length*2));
+  const cap = mode==='mc' ? 20 : curMod.length*2;
+  queue=queue.slice(0,Math.min(queue.length,cap));
 }
 function renderCurrent(){
   if(mode==='route') showRoute(); else if(mode==='mc') showMC(); else showFC();
