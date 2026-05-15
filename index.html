@@ -113,6 +113,24 @@ h1{font-size:1.4rem;font-weight:700;text-align:center;margin-bottom:4px}
 .btn-restart:hover{background:var(--pdk)}
 .btn-back2{width:100%;padding:13px;background:var(--border);color:var(--text);border:none;border-radius:8px;cursor:pointer;font-size:.93rem;font-weight:600}
 
+.home-btns{display:flex;flex-direction:column;gap:14px;margin-top:8px}
+.home-btn{background:var(--card);border:2px solid var(--border);border-radius:var(--r);padding:22px 20px;cursor:pointer;text-align:left;transition:all .15s;width:100%}
+.home-btn:hover{border-color:var(--primary);box-shadow:0 2px 8px rgba(37,99,235,.12)}
+.home-btn-icon{font-size:2.2rem;margin-bottom:8px}
+.home-btn-name{font-weight:700;font-size:1.1rem;margin-bottom:3px}
+.home-btn-desc{font-size:.82rem;color:var(--muted)}
+.home-btn.test-btn{border-color:#fdba74}
+.home-btn.test-btn:hover{border-color:#f97316;box-shadow:0 2px 8px rgba(249,115,22,.15)}
+.home-btn.test-btn .home-btn-name{color:#ea580c}
+
+.pbar-part{font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--primary);text-align:center;margin-bottom:6px;padding:4px 10px;background:#eff6ff;border-radius:6px}
+
+.c-parts{display:flex;gap:12px;margin:10px 0 18px}
+.c-part{flex:1;background:var(--bg);border-radius:8px;padding:14px 10px;text-align:center}
+.c-part-label{font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);margin-bottom:6px}
+.c-part-score{font-size:1.3rem;font-weight:700;color:var(--primary)}
+.c-part-detail{font-size:.72rem;color:var(--muted);margin-top:3px}
+
 </style>
 </head>
 <body>
@@ -122,14 +140,54 @@ h1{font-size:1.4rem;font-weight:700;text-align:center;margin-bottom:4px}
 <!-- HOME -->
 <div id="s-home" class="screen active">
   <h1>🗺️ Авто изпит (ДАИ)</h1>
-  <p class="sub">Изберете модул за практика</p>
+  <p class="sub">Изберете режим</p>
+  <div class="home-btns">
+    <button class="home-btn" onclick="show('s-practice')">
+      <div class="home-btn-icon">📚</div>
+      <div class="home-btn-name">Упражнение</div>
+      <div class="home-btn-desc">Практикувай въпроси, адреси и маршрути</div>
+    </button>
+    <button class="home-btn test-btn" onclick="beginTest()">
+      <div class="home-btn-icon">📝</div>
+      <div class="home-btn-name">Тест</div>
+      <div class="home-btn-desc">Симулирай реален изпит — 20 въпроса + адреси + маршрут</div>
+    </button>
+  </div>
+</div>
+
+<!-- PRACTICE -->
+<div id="s-practice" class="screen">
+  <button class="btn-back" onclick="show('s-home')">← Назад</button>
+  <h1>📚 Упражнение</h1>
+  <p class="sub">Изберете категория</p>
+  <div class="home-btns">
+    <button class="home-btn" onclick="showModules('exam')">
+      <div class="home-btn-icon">🔢</div>
+      <div class="home-btn-name">Изпитни въпроси</div>
+      <div class="home-btn-desc">Модул 1 – 5, множествен избор</div>
+    </button>
+    <button class="home-btn" onclick="showModules('addr')">
+      <div class="home-btn-icon">📍</div>
+      <div class="home-btn-name">Адреси</div>
+      <div class="home-btn-desc">Министерства, болници, хотели и още</div>
+    </button>
+    <button class="home-btn" onclick="showModules('route')">
+      <div class="home-btn-icon">🗺️</div>
+      <div class="home-btn-name">Маршрути</div>
+      <div class="home-btn-desc">10 маршрута стъпка по стъпка</div>
+    </button>
+  </div>
+</div>
+
+<!-- MODULES -->
+<div id="s-modules" class="screen">
+  <button class="btn-back" onclick="show('s-practice')">← Назад</button>
   <div class="mgrid" id="module-grid"></div>
-  <button class="btn-all" onclick="startAll()">📚 Всички въпроси</button>
 </div>
 
 <!-- MODE -->
 <div id="s-mode" class="screen">
-  <button class="btn-back" onclick="document.getElementById('module-grid').innerHTML='';init();show('s-home')">← Назад</button>
+  <button class="btn-back" onclick="show('s-modules')">← Назад</button>
   <h1 id="mode-title"></h1>
   <p class="sub" id="mode-sub"></p>
   <div class="mode-btns">
@@ -155,7 +213,8 @@ h1{font-size:1.4rem;font-weight:700;text-align:center;margin-bottom:4px}
 
 <!-- QUIZ -->
 <div id="s-quiz" class="screen">
-  <button class="btn-back" onclick="show('s-mode')">← Назад</button>
+  <button class="btn-back" onclick="quizBack()">← Назад</button>
+  <div id="pbar-part" class="pbar-part" style="display:none"></div>
   <div class="pbar-wrap"><div class="pbar" id="pbar"></div></div>
   <div class="pbar-row"><span id="pbar-label"></span><span id="pbar-score"></span></div>
 
@@ -252,11 +311,23 @@ h1{font-size:1.4rem;font-weight:700;text-align:center;margin-bottom:4px}
 <div id="s-complete" class="screen">
   <div class="complete">
     <div class="c-emoji" id="c-emoji">🎉</div>
-    <div class="c-title">Сесията приключи!</div>
+    <div class="c-title" id="c-title">Сесията приключи!</div>
     <div class="c-score" id="c-score"></div>
     <div class="c-detail" id="c-detail"></div>
+    <div class="c-parts" id="c-parts" style="display:none">
+      <div class="c-part">
+        <div class="c-part-label">Част 1 — Въпроси</div>
+        <div class="c-part-score" id="cp1-score"></div>
+        <div class="c-part-detail" id="cp1-detail"></div>
+      </div>
+      <div class="c-part">
+        <div class="c-part-label">Част 2 — Адреси и маршрут</div>
+        <div class="c-part-score" id="cp2-score"></div>
+        <div class="c-part-detail" id="cp2-detail"></div>
+      </div>
+    </div>
     <button class="btn-restart" onclick="restartSession()">🔄 Опитай отново</button>
-    <button class="btn-back2" onclick="renderHistory();show('s-mode')">← Назад към модула</button>
+    <button class="btn-back2" onclick="completeBack()">← Назад</button>
   </div>
 </div>
 
@@ -635,6 +706,8 @@ let weights = {}, queue = [], qIdx = 0;
 let sessOk = 0, sessErr = 0, sessTotal = 0;
 let fcFlipped = false, routeSteps = [], routeStepIdx = 0;
 let routeHadError = false, routeRevealedSteps = new Set();
+let testMode = false, testPart1Ok = 0, testPart1Err = 0, testPart2Ok = 0, testPart2Err = 0;
+const TEST_P2 = 20;
 
 // ============================================================
 // MODULE DEFINITIONS
@@ -658,6 +731,8 @@ const MODULES = [
 // ============================================================
 // HISTORY
 // ============================================================
+function shuffle(arr){ const a=[...arr]; for(let i=a.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; } return a; }
+
 function getHistory(key){
   try{ return JSON.parse(localStorage.getItem('history_'+key)||'[]'); } catch(e){ return []; }
 }
@@ -698,10 +773,12 @@ function resetWeights(){ localStorage.removeItem('weights_'+modKey); weights={};
 // ============================================================
 // INIT
 // ============================================================
-function init(){
+function initModules(section){
   const grid = document.getElementById('module-grid');
-  [{label:'Изпитни въпроси',key:'exam'},{label:'Адреси',key:'addr'},{label:'Маршрути',key:'route'}]
-  .forEach(sec=>{
+  grid.innerHTML='';
+  const secDefs = [{label:'Изпитни въпроси',key:'exam'},{label:'Адреси',key:'addr'},{label:'Маршрути',key:'route'}];
+  const filtered = section==='all' ? secDefs : secDefs.filter(s=>s.key===section);
+  filtered.forEach(sec=>{
     const mods = MODULES.filter(m=>m.section===sec.key);
     if(!mods.length) return;
     const hdr = document.createElement('div');
@@ -720,6 +797,8 @@ function init(){
     });
   });
 }
+function init(){ initModules('all'); }
+function showModules(section){ initModules(section); show('s-modules'); }
 
 // ============================================================
 // NAVIGATION
@@ -740,12 +819,29 @@ function selectModule(mod){
   document.getElementById('mode-sub').textContent=curMod.length+' въпроса';
   setModeBtns(curSection); renderHistory(); show('s-mode');
 }
-function startAll(){
-  curMod=[...ALL]; modKey='all'; curSection='all';
-  weights=getWeights(modKey);
-  document.getElementById('mode-title').textContent='Всички въпроси';
-  document.getElementById('mode-sub').textContent=curMod.length+' въпроса';
-  setModeBtns('all'); renderHistory(); show('s-mode');
+
+// ============================================================
+// TEST MODE
+// ============================================================
+function beginTest(){
+  testMode=true; testPart1Ok=0; testPart1Err=0; testPart2Ok=0; testPart2Err=0;
+  sessOk=0; sessErr=0; sessTotal=0; qIdx=0; modKey='test'; weights={};
+  const mc=shuffle(ALL.filter(q=>q.m&&q.m.startsWith('Модул'))).slice(0,20);
+  const inst=shuffle(ALL.filter(q=>q.m==='Адреси: Министерства'||q.m==='Адреси: Важни места')).slice(0,3);
+  const tour=shuffle(ALL.filter(q=>q.m==='Адреси: Хотели')).slice(0,3);
+  const route=shuffle(ALL.filter(q=>q.m==='Маршрути')).slice(0,1);
+  queue=[...mc,...inst,...tour,...route];
+  const partEl=document.getElementById('pbar-part');
+  partEl.style.display=''; partEl.textContent='Част 1 от 2 — Изпитни въпроси';
+  show('s-quiz'); renderCurrent();
+}
+function quizBack(){
+  if(testMode){ testMode=false; document.getElementById('pbar-part').style.display='none'; show('s-home'); }
+  else show('s-mode');
+}
+function completeBack(){
+  if(testMode){ testMode=false; show('s-home'); }
+  else { renderHistory(); show('s-mode'); }
 }
 
 // ============================================================
@@ -763,12 +859,26 @@ function buildQueue(){
   queue=queue.slice(0,Math.min(queue.length,cap));
 }
 function renderCurrent(){
-  if(mode==='route') showRoute(); else if(mode==='mc') showMC(); else showFC();
+  if(testMode){
+    if(qIdx>=queue.length){ sessionDone(); return; }
+    if(qIdx===TEST_P2) document.getElementById('pbar-part').textContent='Част 2 от 2 — Адреси и маршрут';
+    const q=queue[qIdx];
+    if(q.m==='Маршрути') showRoute(); else if(q.type==='fc') showFC(); else showMC();
+  } else {
+    if(mode==='route') showRoute(); else if(mode==='mc') showMC(); else showFC();
+  }
 }
 function updateProgress(){
   const pct=queue.length?Math.round(qIdx/queue.length*100):0;
   document.getElementById('pbar').style.width=pct+'%';
-  document.getElementById('pbar-label').textContent=qIdx+' / '+queue.length;
+  if(testMode){
+    const part=qIdx<TEST_P2?1:2;
+    const pi=part===1?qIdx+1:qIdx-TEST_P2+1;
+    const pt=part===1?20:queue.length-TEST_P2;
+    document.getElementById('pbar-label').textContent='Ч'+part+': '+pi+'/'+pt;
+  } else {
+    document.getElementById('pbar-label').textContent=qIdx+' / '+queue.length;
+  }
   document.getElementById('pbar-score').textContent='✓ '+sessOk+' · ✗ '+sessErr;
 }
 function hideAll(){
@@ -804,7 +914,8 @@ function answerMC(btn,correct,container,correctText){
   const q=queue[qIdx];
   if(correct){ sessOk++; weights[q.id]=Math.max(0.5,(weights[q.id]||1)*0.7); }
   else{ sessErr++; weights[q.id]=Math.min(5,(weights[q.id]||1)+1.5); }
-  sessTotal++; saveWeights(modKey,weights); updateProgress();
+  if(testMode){ if(qIdx<TEST_P2){ testPart1Ok+=correct?1:0; testPart1Err+=correct?0:1; } }
+  sessTotal++; if(!testMode) saveWeights(modKey,weights); updateProgress();
   document.getElementById('nav-next').style.display='block';
 }
 
@@ -859,7 +970,8 @@ function checkFCInput(){
     document.getElementById('fc-input').style.borderColor='var(--err)';
   }
   document.getElementById('fc-result').style.display='block';
-  document.getElementById('fc-btns').style.display='flex';
+  if(testMode){ setTimeout(()=>fcMark(correct),1400); }
+  else { document.getElementById('fc-btns').style.display='flex'; }
 }
 function flip(){
   if(fcFlipped) return; fcFlipped=true;
@@ -870,8 +982,9 @@ function fcMark(correct){
   const q=queue[qIdx];
   if(correct){ sessOk++; weights[q.id]=Math.max(0.5,(weights[q.id]||1)*0.7); }
   else{ sessErr++; weights[q.id]=Math.min(5,(weights[q.id]||1)+1.5); }
-  sessTotal++; saveWeights(modKey,weights); qIdx++; updateProgress();
-  if(mode==='mc') showMC(); else showFC();
+  if(testMode){ testPart2Ok+=correct?1:0; testPart2Err+=correct?0:1; }
+  sessTotal++; if(!testMode) saveWeights(modKey,weights); qIdx++; updateProgress();
+  if(testMode) renderCurrent(); else if(mode==='mc') showMC(); else showFC();
 }
 
 // ============================================================
@@ -965,7 +1078,9 @@ function routeMark(correct){
   const q=queue[qIdx];
   if(correct){ sessOk++; weights[q.id]=Math.max(0.5,(weights[q.id]||1)*0.7); }
   else{ sessErr++; weights[q.id]=Math.min(5,(weights[q.id]||1)+1.5); }
-  sessTotal++; saveWeights(modKey,weights); qIdx++; updateProgress(); showRoute();
+  if(testMode){ testPart2Ok+=correct?1:0; testPart2Err+=correct?0:1; }
+  sessTotal++; if(!testMode) saveWeights(modKey,weights); qIdx++; updateProgress();
+  if(testMode) renderCurrent(); else showRoute();
 }
 
 // ============================================================
@@ -975,13 +1090,32 @@ function nextQ(){ qIdx++; renderCurrent(); }
 
 function sessionDone(){
   const pct=sessTotal?Math.round(sessOk/sessTotal*100):0;
-  saveHistory(modKey,{date:new Date().toISOString(),ok:sessOk,err:sessErr,total:sessTotal,pct});
+  document.getElementById('pbar-part').style.display='none';
   document.getElementById('c-emoji').textContent=pct>=80?'🎉':pct>=60?'💪':'📖';
-  document.getElementById('c-score').textContent=sessOk+' / '+sessTotal;
-  document.getElementById('c-detail').textContent=pct+'% верни · '+sessErr+' грешни';
+  if(testMode){
+    const p2tot=testPart2Ok+testPart2Err;
+    const p1pct=Math.round(testPart1Ok/20*100);
+    const p2pct=p2tot?Math.round(testPart2Ok/p2tot*100):0;
+    document.getElementById('c-title').textContent='Тестът приключи!';
+    document.getElementById('c-score').textContent=sessOk+' / '+sessTotal+' верни';
+    document.getElementById('c-detail').textContent=pct+'% общо';
+    document.getElementById('cp1-score').textContent=testPart1Ok+' / 20';
+    document.getElementById('cp1-detail').textContent=p1pct+'%';
+    document.getElementById('cp2-score').textContent=testPart2Ok+' / '+p2tot;
+    document.getElementById('cp2-detail').textContent=p2pct+'%';
+    document.getElementById('c-parts').style.display='flex';
+  } else {
+    saveHistory(modKey,{date:new Date().toISOString(),ok:sessOk,err:sessErr,total:sessTotal,pct});
+    document.getElementById('c-title').textContent='Сесията приключи!';
+    document.getElementById('c-score').textContent=sessOk+' / '+sessTotal;
+    document.getElementById('c-detail').textContent=pct+'% верни · '+sessErr+' грешни';
+    document.getElementById('c-parts').style.display='none';
+  }
   show('s-complete');
 }
-function restartSession(){ begin(mode); }
+function restartSession(){
+  if(testMode) beginTest(); else begin(mode);
+}
 
 document.addEventListener('DOMContentLoaded',()=>{
   document.getElementById('fc-input').addEventListener('keydown',function(e){
