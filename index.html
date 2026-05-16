@@ -840,10 +840,17 @@ function selectModule(mod){
 function beginTest(){
   testMode=true; testPart1Ok=0; testPart1Err=0; testPart2Ok=0; testPart2Err=0;
   sessOk=0; sessErr=0; sessTotal=0; qIdx=0; modKey='test'; weights={};
-  const mc=shuffle(ALL.filter(q=>q.m&&q.m.startsWith('Модул'))).slice(0,20);
-  const inst=shuffle(ALL.filter(q=>q.m==='Адреси: Министерства'||q.m==='Адреси: Важни места')).slice(0,3);
-  const tour=shuffle(ALL.filter(q=>q.m==='Адреси: Хотели')).slice(0,3);
-  const route=shuffle(ALL.filter(q=>q.m==='Маршрути')).slice(0,1);
+  const dist=[['Модул 1',6],['Модул 2',3],['Модул 3',3],['Модул 4',4],['Модул 5',4]];
+  const mc=dist.reduce(function(acc,d){
+    return acc.concat(shuffle(ALL.filter(function(q){return q.m&&q.m.startsWith(d[0]);})).slice(0,d[1]));
+  },[]);
+  const inst=shuffle(ALL.filter(function(q){
+    return q.type==='fc'&&(q.m==='Адреси: Министерства'||q.m==='Адреси: Важни места'||q.m==='Адреси: Болници');
+  })).slice(0,3);
+  const tour=shuffle(ALL.filter(function(q){
+    return q.type==='fc'&&(q.m==='Адреси: Хотели'||q.m==='Адреси: Спортни обекти'||q.m==='Адреси: Висши учебни заведения');
+  })).slice(0,3);
+  const route=shuffle(ALL.filter(function(q){return q.m==='Маршрути';})).slice(0,1);
   queue=[...mc,...inst,...tour,...route];
   const partEl=document.getElementById('pbar-part');
   partEl.style.display=''; partEl.textContent='Част 1 от 2 — Изпитни въпроси';
