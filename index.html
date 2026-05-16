@@ -54,7 +54,10 @@ h1{font-size:1.4rem;font-weight:700;text-align:center;margin-bottom:4px}
 
 .pbar-wrap{background:var(--border);border-radius:999px;height:6px;margin-bottom:6px}
 .pbar{background:var(--primary);height:100%;border-radius:999px;transition:width .3s}
-.pbar-row{display:flex;justify-content:space-between;font-size:.78rem;color:var(--muted);margin-bottom:18px}
+.pbar-row{display:flex;justify-content:space-between;align-items:center;font-size:.78rem;color:var(--muted);margin-bottom:18px}
+#pbar-timer{display:none;font-weight:700;font-size:.85rem;letter-spacing:.03em;color:var(--primary);font-variant-numeric:tabular-nums}
+#pbar-timer.warn{color:#e11d48;animation:timerpulse 1s ease-in-out infinite}
+@keyframes timerpulse{0%,100%{opacity:1}50%{opacity:.55}}
 
 .qcard{background:var(--card);border-radius:var(--r);padding:22px;margin-bottom:14px;box-shadow:0 1px 4px rgba(0,0,0,.06)}
 .qtag{font-size:.68rem;color:var(--primary);font-weight:700;text-transform:uppercase;letter-spacing:.05em;margin-bottom:8px}
@@ -228,7 +231,7 @@ h1{font-size:1.4rem;font-weight:700;text-align:center;margin-bottom:4px}
   <button class="btn-back" onclick="quizBack()">← Назад</button>
   <div id="pbar-part" class="pbar-part" style="display:none"></div>
   <div class="pbar-wrap"><div class="pbar" id="pbar"></div></div>
-  <div class="pbar-row"><span id="pbar-label"></span><span id="pbar-score"></span></div>
+  <div class="pbar-row"><span id="pbar-label"></span><span id="pbar-timer"></span><span id="pbar-score"></span></div>
 
   <!-- MULTIPLE CHOICE -->
   <div id="mc-area">
@@ -726,6 +729,7 @@ let sessOk = 0, sessErr = 0, sessTotal = 0;
 let fcFlipped = false, routeSteps = [], routeStepIdx = 0;
 let fcHintMode = false;
 let currentSessionStart = null;
+let timerInterval = null, timerSec = 0;
 let routeHadError = false, routeRevealedSteps = new Set();
 let testMode = false, testPart1Ok = 0, testPart1Err = 0, testPart2Ok = 0, testPart2Err = 0;
 const TEST_P2 = 20;
@@ -780,6 +784,28 @@ function saveCurrentSession(){
 }
 function clearCurrentSession(){
   try{ localStorage.removeItem(CURR_KEY); } catch(e){}
+}
+function startTimer(sec){
+  stopTimer();
+  timerSec=sec;
+  const el=document.getElementById('pbar-timer');
+  if(!el) return;
+  el.style.display='';
+  function tick(){
+    const m=Math.floor(timerSec/60);
+    const s=timerSec%60;
+    el.textContent=(m<10?'0':'')+m+':'+(s<10?'0':'')+s;
+    if(timerSec<=120) el.classList.add('warn'); else el.classList.remove('warn');
+    if(timerSec===0){ stopTimer(); sessionDone(); return; }
+    timerSec--;
+  }
+  tick();
+  timerInterval=setInterval(tick,1000);
+}
+function stopTimer(){
+  if(timerInterval){ clearInterval(timerInterval); timerInterval=null; }
+  const el=document.getElementById('pbar-timer');
+  if(el){ el.style.display='none'; el.classList.remove('warn'); }
 }
 function migrateHistory(){
   const all=getAllHistory(); let n=0;
@@ -887,10 +913,11 @@ function beginTest(){
   queue=[...mc,...inst,...tour,...route];
   const partEl=document.getElementById('pbar-part');
   partEl.style.display=''; partEl.textContent='Част 1 от 2 — Изпитни въпроси';
+  startTimer(20*60);
   show('s-quiz'); renderCurrent();
 }
 function quizBack(){
-  if(testMode){ testMode=false; document.getElementById('pbar-part').style.display='none'; show('s-home'); }
+  if(testMode){ testMode=false; stopTimer(); document.getElementById('pbar-part').style.display='none'; show('s-home'); }
   else show('s-mode');
 }
 function completeBack(){
@@ -920,7 +947,7 @@ function buildQueue(){
 function renderCurrent(){
   if(testMode){
     if(qIdx>=queue.length){ sessionDone(); return; }
-    if(qIdx===TEST_P2) document.getElementById('pbar-part').textContent='Част 2 от 2 — Адреси и маршрут';
+    if(qIdx===TEST_P2){ document.getElementById('pbar-part').textContent='Част 2 от 2 — Адреси и маршрут'; startTimer(30*60); }
     const q=queue[qIdx];
     if(q.m==='Маршрути') showRoute(); else if(q.type==='fc') showFC(); else showMC();
   } else {
@@ -1192,6 +1219,7 @@ function nextQ(){ qIdx++; renderCurrent(); }
 
 function sessionDone(){
   const pct=sessTotal?Math.round(sessOk/sessTotal*100):0;
+  stopTimer();
   document.getElementById('pbar-part').style.display='none';
   document.getElementById('c-emoji').textContent=pct>=80?'🎉':pct>=60?'💪':'📖';
   if(testMode){
