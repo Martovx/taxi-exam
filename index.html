@@ -208,6 +208,11 @@ h1{font-size:1.4rem;font-weight:700;text-align:center;margin-bottom:4px}
       <div class="mcard-name">Флашкарти</div>
       <div class="mcard-desc">Обърни за отговора</div>
     </div>
+    <div class="mcard" id="btn-fc7" onclick="begin('fc7')">
+      <div class="mcard-icon">✏️</div>
+      <div class="mcard-name">7 Адреса</div>
+      <div class="mcard-desc">7 уникални, без повторения</div>
+    </div>
     <div class="mcard" id="btn-route" onclick="begin('route')">
       <div class="mcard-icon">🗺️</div>
       <div class="mcard-name">Маршрут стъпка по стъпка</div>
@@ -824,6 +829,7 @@ function show(id){
 function setModeBtns(section){
   document.getElementById('btn-mc').style.display    = (section==='exam'||section==='all')?'':'none';
   document.getElementById('btn-fc').style.display    = (section==='addr'||section==='all')?'':'none';
+  document.getElementById('btn-fc7').style.display   = section==='addr'?'':'none';
   document.getElementById('btn-route').style.display = section==='route'?'':'none';
 }
 function selectModule(mod){
@@ -874,6 +880,10 @@ function begin(m){
 }
 function buildQueue(){
   queue=[];
+  if(mode==='fc7'){
+    queue=shuffle(curMod.slice()).slice(0,7);
+    return;
+  }
   curMod.forEach(q=>{ const w=weights[q.id]||1; for(let i=0;i<Math.ceil(w);i++) queue.push(q); });
   for(let i=queue.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [queue[i],queue[j]]=[queue[j],queue[i]]; }
   if(mode==='mc'){ const seen=new Set(); queue=queue.filter(q=>seen.has(q.id)?false:seen.add(q.id)); }
