@@ -979,7 +979,7 @@ function showMC(){
   const q=queue[qIdx];
   if(q.type==='fc'){ hideAll(); document.getElementById('fc-area').style.display=''; updateProgress(); renderFC(q); return; }
   hideAll(); document.getElementById('mc-area').style.display='';
-  document.getElementById('q-tag').textContent=q.m;
+  document.getElementById('q-tag').textContent=testMode?'':q.m;
   document.getElementById('q-text').textContent=q.q;
   document.getElementById('nav-next').style.display='none';
   updateProgress();
