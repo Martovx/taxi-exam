@@ -725,6 +725,7 @@ let weights = {}, queue = [], qIdx = 0;
 let sessOk = 0, sessErr = 0, sessTotal = 0;
 let fcFlipped = false, routeSteps = [], routeStepIdx = 0;
 let fcHintMode = false;
+let currentSessionStart = null;
 let routeHadError = false, routeRevealedSteps = new Set();
 let testMode = false, testPart1Ok = 0, testPart1Err = 0, testPart2Ok = 0, testPart2Err = 0;
 const TEST_P2 = 20;
@@ -752,18 +753,44 @@ const MODULES = [
 // ============================================================
 function shuffle(arr){ const a=[...arr]; for(let i=a.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; } return a; }
 
-function getHistory(key){
-  try{ return JSON.parse(localStorage.getItem('history_'+key)||'[]'); } catch(e){ return []; }
+const HIST_KEY='taxi_all_history';
+const CURR_KEY='taxi_current_session';
+function getAllHistory(){
+  try{ return JSON.parse(localStorage.getItem(HIST_KEY)||'{}'); } catch(e){ return {}; }
 }
-function saveHistory(key, result){
-  let h = getHistory(key);
+function getHistory(key){
+  return getAllHistory()[key]||[];
+}
+function saveHistory(key,result){
+  const all=getAllHistory();
+  const h=all[key]||[];
   h.unshift(result);
-  if(h.length > 5) h = h.slice(0,5);
-  localStorage.setItem('history_'+key, JSON.stringify(h));
+  all[key]=h.slice(0,5);
+  localStorage.setItem(HIST_KEY,JSON.stringify(all));
 }
 function clearHistory(){
-  localStorage.removeItem('history_'+modKey);
+  const all=getAllHistory();
+  delete all[modKey];
+  localStorage.setItem(HIST_KEY,JSON.stringify(all));
   renderHistory();
+}
+function saveCurrentSession(){
+  if(testMode) return;
+  try{ localStorage.setItem(CURR_KEY,JSON.stringify({modKey:modKey,ok:sessOk,err:sessErr,total:sessTotal,start:currentSessionStart})); } catch(e){}
+}
+function clearCurrentSession(){
+  try{ localStorage.removeItem(CURR_KEY); } catch(e){}
+}
+function migrateHistory(){
+  const all=getAllHistory(); let n=0;
+  Object.keys(localStorage).forEach(function(k){
+    if(k.indexOf('history_')===0){
+      const key=k.slice(8);
+      if(!all[key]){ try{ all[key]=JSON.parse(localStorage.getItem(k)||'[]'); n++; } catch(e){} }
+      localStorage.removeItem(k);
+    }
+  });
+  if(n>0){ localStorage.setItem(HIST_KEY,JSON.stringify(all)); console.log('[taxi] migrated',n,'history keys'); }
 }
 function renderHistory(){
   const h = getHistory(modKey);
@@ -816,7 +843,7 @@ function initModules(section){
     });
   });
 }
-function init(){ initModules('all'); }
+function init(){ migrateHistory(); console.log('[taxi] storage:',location.href,Object.keys(localStorage).filter(function(k){return k.indexOf('taxi')===0;})); initModules('all'); }
 function showModules(section){ initModules(section); show('s-modules'); }
 
 // ============================================================
@@ -845,7 +872,7 @@ function selectModule(mod){
 // ============================================================
 function beginTest(){
   testMode=true; testPart1Ok=0; testPart1Err=0; testPart2Ok=0; testPart2Err=0;
-  sessOk=0; sessErr=0; sessTotal=0; qIdx=0; modKey='test'; weights={};
+  sessOk=0; sessErr=0; sessTotal=0; currentSessionStart=new Date().toISOString(); qIdx=0; modKey='test'; weights={};
   const dist=[['Модул 1',6],['Модул 2',3],['Модул 3',3],['Модул 4',4],['Модул 5',4]];
   const mc=dist.reduce(function(acc,d){
     return acc.concat(shuffle(ALL.filter(function(q){return q.m&&q.m.startsWith(d[0]);})).slice(0,d[1]));
@@ -875,7 +902,7 @@ function completeBack(){
 // SESSION
 // ============================================================
 function begin(m){
-  mode=m; sessOk=0; sessErr=0; sessTotal=0;
+  mode=m; sessOk=0; sessErr=0; sessTotal=0; currentSessionStart=new Date().toISOString();
   buildQueue(); qIdx=0; show('s-quiz'); renderCurrent();
 }
 function buildQueue(){
@@ -947,7 +974,7 @@ function answerMC(btn,correct,container,correctText){
   if(correct){ sessOk++; weights[q.id]=Math.max(0.5,(weights[q.id]||1)*0.7); }
   else{ sessErr++; weights[q.id]=Math.min(5,(weights[q.id]||1)+1.5); }
   if(testMode){ if(qIdx<TEST_P2){ testPart1Ok+=correct?1:0; testPart1Err+=correct?0:1; } }
-  sessTotal++; if(!testMode) saveWeights(modKey,weights); updateProgress();
+  sessTotal++; if(!testMode) saveWeights(modKey,weights); saveCurrentSession(); updateProgress();
   document.getElementById('nav-next').style.display='block';
 }
 
@@ -1045,7 +1072,7 @@ function fcMark(correct){
   if(correct){ sessOk++; weights[q.id]=Math.max(0.5,(weights[q.id]||1)*0.7); }
   else{ sessErr++; weights[q.id]=Math.min(5,(weights[q.id]||1)+1.5); }
   if(testMode){ testPart2Ok+=correct?1:0; testPart2Err+=correct?0:1; }
-  sessTotal++; if(!testMode) saveWeights(modKey,weights); qIdx++; updateProgress();
+  sessTotal++; if(!testMode) saveWeights(modKey,weights); saveCurrentSession(); qIdx++; updateProgress();
   if(testMode) renderCurrent(); else if(mode==='mc') showMC(); else showFC();
 }
 
@@ -1154,7 +1181,7 @@ function routeMark(correct){
   if(correct){ sessOk++; weights[q.id]=Math.max(0.5,(weights[q.id]||1)*0.7); }
   else{ sessErr++; weights[q.id]=Math.min(5,(weights[q.id]||1)+1.5); }
   if(testMode){ testPart2Ok+=correct?1:0; testPart2Err+=correct?0:1; }
-  sessTotal++; if(!testMode) saveWeights(modKey,weights); qIdx++; updateProgress();
+  sessTotal++; if(!testMode) saveWeights(modKey,weights); saveCurrentSession(); qIdx++; updateProgress();
   if(testMode) renderCurrent(); else showRoute();
 }
 
@@ -1180,7 +1207,7 @@ function sessionDone(){
     document.getElementById('cp2-detail').textContent=p2pct+'%';
     document.getElementById('c-parts').style.display='flex';
   } else {
-    saveHistory(modKey,{date:new Date().toISOString(),ok:sessOk,err:sessErr,total:sessTotal,pct});
+    clearCurrentSession(); saveHistory(modKey,{date:new Date().toISOString(),ok:sessOk,err:sessErr,total:sessTotal,pct});
     document.getElementById('c-title').textContent='Сесията приключи!';
     document.getElementById('c-score').textContent=sessOk+' / '+sessTotal;
     document.getElementById('c-detail').textContent=pct+'% верни · '+sessErr+' грешни';
