@@ -1,4 +1,4 @@
-const CACHE = 'taxi-exam-v14';
+const CACHE = 'taxi-exam-v16';
 const ASSETS = [
   '/taxi-exam/',
   '/taxi-exam/index.html',
