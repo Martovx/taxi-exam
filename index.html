@@ -80,6 +80,13 @@ h1{font-size:1.4rem;font-weight:700;text-align:center;margin-bottom:4px}
 .fc-tap{font-size:1rem;font-weight:600;color:var(--muted)}
 .fc-answer{font-size:1rem;font-weight:600;color:var(--pdk);line-height:1.5}
 .fc-ans-label{font-size:.7rem;color:var(--primary);font-weight:700;text-transform:uppercase;margin-bottom:8px}
+.fc-hint-toggle{width:100%;padding:9px;background:var(--card);border:2px solid var(--border);border-radius:8px;cursor:pointer;font-size:.82rem;font-weight:600;color:var(--muted);margin-bottom:10px;transition:all .2s}
+.fc-hint-toggle.active{background:#eff6ff;border-color:var(--primary);color:var(--primary)}
+.fc-hints-list{background:#f8fafc;border:1.5px solid var(--border);border-radius:8px;padding:12px 14px;margin-bottom:10px;display:none}
+.fc-hints-list.visible{display:block}
+.fc-hints-label{font-size:.7rem;color:var(--muted);font-weight:700;text-transform:uppercase;margin-bottom:8px}
+.fc-hint-opt{font-size:.88rem;color:var(--text);padding:6px 0;border-bottom:1px solid var(--border);line-height:1.45}
+.fc-hint-opt:last-child{border-bottom:none}
 .fc-btns{display:flex;gap:10px;margin-bottom:14px}
 .fc-btns button{flex:1;padding:13px;border:none;border-radius:8px;cursor:pointer;font-size:.93rem;font-weight:600}
 .fc-no{background:#fee2e2;color:var(--err)}
@@ -237,6 +244,11 @@ h1{font-size:1.4rem;font-weight:700;text-align:center;margin-bottom:4px}
       <div class="qtext" id="fc-q"></div>
     </div>
     <div id="fc-input-area">
+      <button id="fc-hint-toggle-btn" class="fc-hint-toggle" onclick="toggleFCHint()">💡 С подсказка</button>
+      <div id="fc-hints-list" class="fc-hints-list">
+        <div class="fc-hints-label">Избери верния адрес:</div>
+        <div id="fc-hint-opts"></div>
+      </div>
       <textarea id="fc-input" placeholder="Напиши отговора тук..." rows="3"
         style="width:100%;padding:12px 14px;border:2px solid var(--border);border-radius:8px;font-size:.95rem;font-family:inherit;resize:vertical;background:var(--card);color:var(--text);outline:none;margin-bottom:10px"></textarea>
       <button onclick="checkFCInput()" id="fc-check-btn"
@@ -707,6 +719,7 @@ let curMod = null, modKey = '', curSection = '', mode = 'mc';
 let weights = {}, queue = [], qIdx = 0;
 let sessOk = 0, sessErr = 0, sessTotal = 0;
 let fcFlipped = false, routeSteps = [], routeStepIdx = 0;
+let fcHintMode = false;
 let routeHadError = false, routeRevealedSteps = new Set();
 let testMode = false, testPart1Ok = 0, testPart1Err = 0, testPart2Ok = 0, testPart2Err = 0;
 const TEST_P2 = 20;
@@ -930,6 +943,31 @@ function showFC(){
   const q=queue[qIdx]; hideAll();
   document.getElementById('fc-area').style.display=''; updateProgress(); renderFC(q);
 }
+function getFCHints(q){
+  const pool=ALL.filter(function(x){ return x.m===q.m && x.type==='fc' && x.a!==q.a; });
+  const decoys=shuffle(pool.slice()).slice(0,2).map(function(x){ return x.a; });
+  return shuffle([q.a].concat(decoys));
+}
+function toggleFCHint(){
+  fcHintMode=!fcHintMode;
+  const btn=document.getElementById('fc-hint-toggle-btn');
+  const list=document.getElementById('fc-hints-list');
+  if(fcHintMode){
+    btn.classList.add('active'); btn.textContent='💡 По памет';
+    if(qIdx<queue.length){ renderFCHints(queue[qIdx]); }
+    list.classList.add('visible');
+  } else {
+    btn.classList.remove('active'); btn.textContent='💡 С подсказка';
+    list.classList.remove('visible');
+  }
+}
+function renderFCHints(q){
+  const opts=getFCHints(q);
+  const container=document.getElementById('fc-hint-opts');
+  container.innerHTML=opts.map(function(a,i){
+    return '<div class="fc-hint-opt">'+(i+1)+'. '+a+'</div>';
+  }).join('');
+}
 function renderFC(q){
   fcFlipped=false;
   document.getElementById('fc-tag').textContent=q.m;
@@ -947,6 +985,11 @@ function renderFC(q){
     document.getElementById('fc-check-btn').style.display='block';
     document.getElementById('fc-input-area').style.display='block';
     document.getElementById('fc-flip-wrap').style.display='none';
+    const hintBtn=document.getElementById('fc-hint-toggle-btn');
+    const hintList=document.getElementById('fc-hints-list');
+    hintBtn.style.display='';
+    if(fcHintMode){ renderFCHints(q); hintList.classList.add('visible'); }
+    else { hintList.classList.remove('visible'); }
     setTimeout(()=>document.getElementById('fc-input').focus(),100);
   } else {
     document.getElementById('fc-input-area').style.display='none';
