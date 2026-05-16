@@ -1173,6 +1173,7 @@ function checkRouteStep(){
       document.getElementById('rt-input-area').style.display='none';
       document.getElementById('rt-full-route').textContent=routeSteps.map((s,i)=>(i+1)+'. '+s).join('  →  ');
       document.getElementById('rt-success').style.display='';
+      if(testMode){ setTimeout(function(){ routeMark(!routeHadError); }, 1200); }
     } else { inp.focus(); }
   } else { inp.className='err'; document.getElementById('rt-err-msg').style.display=''; }
 }
@@ -1196,6 +1197,7 @@ function continueAfterReveal(){
     document.getElementById('rt-input-area').style.display='none';
     document.getElementById('rt-full-route').textContent=routeSteps.map((s,i)=>(i+1)+'. '+s).join('  →  ');
     document.getElementById('rt-success').style.display='';
+    if(testMode){ setTimeout(function(){ routeMark(!routeHadError); }, 1200); }
   } else {
     document.getElementById('rt-input-area').style.display='block';
     const inp=document.getElementById('rt-input'); inp.value=''; inp.className='';
