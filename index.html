@@ -1223,25 +1223,15 @@ function sessionDone(){
   document.getElementById('pbar-part').style.display='none';
   document.getElementById('c-emoji').textContent=pct>=80?'🎉':pct>=60?'💪':'📖';
   if(testMode){
-    const p2tot=testPart2Ok+testPart2Err;
-    const p1pct=Math.round(testPart1Ok/20*100);
-    const p2pct=p2tot?Math.round(testPart2Ok/p2tot*100):0;
-    document.getElementById('c-title').textContent='Тестът приключи!';
-    document.getElementById('c-score').textContent=sessOk+' / '+sessTotal+' верни';
-    document.getElementById('c-detail').textContent=pct+'% общо';
-    document.getElementById('cp1-score').textContent=testPart1Ok+' / 20';
-    document.getElementById('cp1-detail').textContent=p1pct+'%';
-    document.getElementById('cp2-score').textContent=testPart2Ok+' / '+p2tot;
-    document.getElementById('cp2-detail').textContent=p2pct+'%';
-    document.getElementById('c-parts').style.display='flex';
+    showTestModal();
   } else {
     clearCurrentSession(); saveHistory(modKey,{date:new Date().toISOString(),ok:sessOk,err:sessErr,total:sessTotal,pct});
     document.getElementById('c-title').textContent='Сесията приключи!';
     document.getElementById('c-score').textContent=sessOk+' / '+sessTotal;
     document.getElementById('c-detail').textContent=pct+'% верни · '+sessErr+' грешни';
     document.getElementById('c-parts').style.display='none';
+    show('s-complete');
   }
-  show('s-complete');
 }
 function restartSession(){
   if(testMode) beginTest(); else begin(mode);
