@@ -136,6 +136,28 @@ h1{font-size:1.4rem;font-weight:700;text-align:center;margin-bottom:4px}
 .pbar-part{font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--primary);text-align:center;margin-bottom:6px;padding:4px 10px;background:#eff6ff;border-radius:6px}
 
 .c-parts{display:flex;gap:12px;margin:10px 0 18px}
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:999;align-items:center;justify-content:center;padding:20px}
+.modal-overlay.open{display:flex}
+.modal-box{background:var(--card);border-radius:16px;padding:28px 24px;width:100%;max-width:400px;box-shadow:0 8px 32px rgba(0,0,0,.18);text-align:center;animation:modalin .22s ease}
+@keyframes modalin{from{transform:scale(.93);opacity:0}to{transform:scale(1);opacity:1}}
+.modal-emoji{font-size:3.2rem;margin-bottom:8px}
+.modal-title{font-size:1.2rem;font-weight:700;margin-bottom:16px}
+.modal-parts{display:flex;gap:12px;margin:0 0 20px}
+.modal-part{flex:1;border-radius:10px;padding:14px 10px}
+.modal-part.pass{background:#dcfce7;border:1.5px solid #86efac}
+.modal-part.fail{background:#fee2e2;border:1.5px solid #fca5a5}
+.modal-part-label{font-size:.66rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);margin-bottom:6px}
+.modal-part-score{font-size:1.45rem;font-weight:700;color:var(--text)}
+.modal-part-pct{font-size:.82rem;color:var(--muted);margin-top:2px}
+.modal-part-verdict{font-size:.78rem;font-weight:700;margin-top:6px}
+.modal-part.pass .modal-part-verdict{color:#16a34a}
+.modal-part.fail .modal-part-verdict{color:#dc2626}
+.modal-total{font-size:.88rem;color:var(--muted);margin-bottom:20px}
+.modal-btns{display:flex;flex-direction:column;gap:10px}
+.modal-btn-primary{padding:13px;background:var(--primary);color:#fff;border:none;border-radius:8px;cursor:pointer;font-size:.95rem;font-weight:600}
+.modal-btn-primary:hover{background:var(--pdk)}
+.modal-btn-secondary{padding:11px;background:transparent;color:var(--muted);border:1.5px solid var(--border);border-radius:8px;cursor:pointer;font-size:.9rem}
+.modal-btn-secondary:hover{background:var(--bg)}
 .c-part{flex:1;background:var(--bg);border-radius:8px;padding:14px 10px;text-align:center}
 .c-part-label{font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);margin-bottom:6px}
 .c-part-score{font-size:1.3rem;font-weight:700;color:var(--primary)}
@@ -325,6 +347,33 @@ h1{font-size:1.4rem;font-weight:700;text-align:center;margin-bottom:4px}
         <div class="rt-full-route" id="rt-full-route"></div>
         <button class="btn-next" style="margin-top:10px" onclick="routeMark(!routeHadError)">Следващ →</button>
       </div>
+    </div>
+  </div>
+</div>
+
+<!-- TEST RESULT MODAL -->
+<div class="modal-overlay" id="test-modal">
+  <div class="modal-box">
+    <div class="modal-emoji" id="m-emoji">🎉</div>
+    <div class="modal-title" id="m-title">Тестът приключи!</div>
+    <div class="modal-parts">
+      <div class="modal-part" id="m-p1">
+        <div class="modal-part-label">Ч1 — Въпроси</div>
+        <div class="modal-part-score" id="m-p1-score"></div>
+        <div class="modal-part-pct" id="m-p1-pct"></div>
+        <div class="modal-part-verdict" id="m-p1-verdict"></div>
+      </div>
+      <div class="modal-part" id="m-p2">
+        <div class="modal-part-label">Ч2 — Адреси</div>
+        <div class="modal-part-score" id="m-p2-score"></div>
+        <div class="modal-part-pct" id="m-p2-pct"></div>
+        <div class="modal-part-verdict" id="m-p2-verdict"></div>
+      </div>
+    </div>
+    <div class="modal-total" id="m-total"></div>
+    <div class="modal-btns">
+      <button class="modal-btn-primary" onclick="modalRestart()">🔄 Опитай отново</button>
+      <button class="modal-btn-secondary" onclick="modalClose()">← Начало</button>
     </div>
   </div>
 </div>
@@ -919,6 +968,37 @@ function beginTest(){
 function quizBack(){
   if(testMode){ testMode=false; stopTimer(); document.getElementById('pbar-part').style.display='none'; show('s-home'); }
   else show('s-mode');
+}
+function showTestModal(){
+  const p2tot=testPart2Ok+testPart2Err;
+  const p1pass=testPart1Ok>=18;
+  const p2pass=p2tot>0&&testPart2Ok>=Math.ceil(p2tot*0.7);
+  const overallPass=p1pass&&p2pass;
+  const pct=sessTotal?Math.round(sessOk/sessTotal*100):0;
+  const p1pct=Math.round(testPart1Ok/20*100);
+  const p2pct=p2tot?Math.round(testPart2Ok/p2tot*100):0;
+  document.getElementById('m-emoji').textContent=overallPass?'🎉':p1pass?'💪':'📖';
+  document.getElementById('m-title').textContent=overallPass?'Тестът е успешен!':'Тестът приключи!';
+  document.getElementById('m-p1-score').textContent=testPart1Ok+' / 20';
+  document.getElementById('m-p1-pct').textContent=p1pct+'%';
+  document.getElementById('m-p1-verdict').textContent=p1pass?'✅ УСПЕХ':'❌ НЕУСПЕХ';
+  const p1el=document.getElementById('m-p1');
+  p1el.className='modal-part '+(p1pass?'pass':'fail');
+  document.getElementById('m-p2-score').textContent=testPart2Ok+' / '+p2tot;
+  document.getElementById('m-p2-pct').textContent=p2pct+'%';
+  document.getElementById('m-p2-verdict').textContent=p2pass?'✅ УСПЕХ':'❌ НЕУСПЕХ';
+  const p2el=document.getElementById('m-p2');
+  p2el.className='modal-part '+(p2pass?'pass':'fail');
+  document.getElementById('m-total').textContent='Общо: '+sessOk+' / '+sessTotal+' верни ('+pct+'%)';
+  document.getElementById('test-modal').classList.add('open');
+}
+function modalClose(){
+  document.getElementById('test-modal').classList.remove('open');
+  testMode=false; show('s-home');
+}
+function modalRestart(){
+  document.getElementById('test-modal').classList.remove('open');
+  beginTest();
 }
 function completeBack(){
   if(testMode){ testMode=false; show('s-home'); }
