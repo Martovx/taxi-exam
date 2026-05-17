@@ -780,7 +780,7 @@ let fcHintMode = false;
 let currentSessionStart = null;
 let timerInterval = null, timerSec = 0;
 let routeHadError = false, routeRevealedSteps = new Set();
-let testMode = false, testPart1Ok = 0, testPart1Err = 0, testPart2Ok = 0, testPart2Err = 0;
+let testMode = false, testPart1Ok = 0, testPart1Err = 0, testP2AddrPts = 0, testP2RoutePts = 0;
 const TEST_P2 = 20;
 
 // ============================================================
@@ -946,7 +946,7 @@ function selectModule(mod){
 // TEST MODE
 // ============================================================
 function beginTest(){
-  testMode=true; testPart1Ok=0; testPart1Err=0; testPart2Ok=0; testPart2Err=0;
+  testMode=true; testPart1Ok=0; testPart1Err=0; testP2AddrPts=0; testP2RoutePts=0;
   sessOk=0; sessErr=0; sessTotal=0; currentSessionStart=new Date().toISOString(); qIdx=0; modKey='test'; weights={};
   const dist=[['Модул 1',6],['Модул 2',3],['Модул 3',3],['Модул 4',4],['Модул 5',4]];
   const mc=dist.reduce(function(acc,d){
@@ -970,26 +970,25 @@ function quizBack(){
   else show('s-mode');
 }
 function showTestModal(){
-  const p2tot=testPart2Ok+testPart2Err;
+  const p2total=testP2AddrPts+testP2RoutePts;
   const p1pass=testPart1Ok>=18;
-  const p2pass=p2tot>0&&testPart2Ok>=Math.ceil(p2tot*0.7);
+  const p2pass=p2total>=14;
   const overallPass=p1pass&&p2pass;
-  const pct=sessTotal?Math.round(sessOk/sessTotal*100):0;
   const p1pct=Math.round(testPart1Ok/20*100);
-  const p2pct=p2tot?Math.round(testPart2Ok/p2tot*100):0;
-  document.getElementById('m-emoji').textContent=overallPass?'🎉':p1pass?'💪':'📖';
+  const p2pct=Math.round(p2total/16*100);
+  document.getElementById('m-emoji').textContent=overallPass?'🎉':p1pass||p2pass?'💪':'📖';
   document.getElementById('m-title').textContent=overallPass?'Тестът е успешен!':'Тестът приключи!';
-  document.getElementById('m-p1-score').textContent=testPart1Ok+' / 20';
-  document.getElementById('m-p1-pct').textContent=p1pct+'%';
+  document.getElementById('m-p1-score').textContent=testPart1Ok+' / 20 т.';
+  document.getElementById('m-p1-pct').textContent='грешки: '+testPart1Err+'/20';
   document.getElementById('m-p1-verdict').textContent=p1pass?'✅ УСПЕХ':'❌ НЕУСПЕХ';
   const p1el=document.getElementById('m-p1');
   p1el.className='modal-part '+(p1pass?'pass':'fail');
-  document.getElementById('m-p2-score').textContent=testPart2Ok+' / '+p2tot;
-  document.getElementById('m-p2-pct').textContent=p2pct+'%';
-  document.getElementById('m-p2-verdict').textContent=p2pass?'✅ УСПЕХ':'❌ НЕУСПЕХ';
+  document.getElementById('m-p2-score').textContent=p2total+' / 16 т.';
+  document.getElementById('m-p2-pct').textContent='адреси '+testP2AddrPts+'/6  ·  маршрут '+testP2RoutePts+'/10';
+  document.getElementById('m-p2-verdict').textContent=p2pass?'✅ УСПЕХ (≥14т.)':'❌ НЕУСПЕХ (<14т.)';
   const p2el=document.getElementById('m-p2');
   p2el.className='modal-part '+(p2pass?'pass':'fail');
-  document.getElementById('m-total').textContent='Общо: '+sessOk+' / '+sessTotal+' верни ('+pct+'%)';
+  document.getElementById('m-total').textContent='Ч1: '+p1pct+'%  ·  Ч2: '+p2pct+'% ('+p2total+' т.)';
   document.getElementById('test-modal').classList.add('open');
 }
 function modalClose(){
@@ -1178,7 +1177,7 @@ function fcMark(correct){
   const q=queue[qIdx];
   if(correct){ sessOk++; weights[q.id]=Math.max(0.5,(weights[q.id]||1)*0.7); }
   else{ sessErr++; weights[q.id]=Math.min(5,(weights[q.id]||1)+1.5); }
-  if(testMode){ testPart2Ok+=correct?1:0; testPart2Err+=correct?0:1; }
+  if(testMode){ testP2AddrPts+=correct?1:0; }
   sessTotal++; if(!testMode) saveWeights(modKey,weights); saveCurrentSession(); qIdx++; updateProgress();
   if(testMode) renderCurrent(); else if(mode==='mc') showMC(); else showFC();
 }
@@ -1289,7 +1288,7 @@ function routeMark(correct){
   const q=queue[qIdx];
   if(correct){ sessOk++; weights[q.id]=Math.max(0.5,(weights[q.id]||1)*0.7); }
   else{ sessErr++; weights[q.id]=Math.min(5,(weights[q.id]||1)+1.5); }
-  if(testMode){ testPart2Ok+=correct?1:0; testPart2Err+=correct?0:1; }
+  if(testMode){ const cs=routeSteps.length-routeRevealedSteps.size; testP2RoutePts=routeSteps.length>0?Math.round((cs/routeSteps.length)*10):0; }
   sessTotal++; if(!testMode) saveWeights(modKey,weights); saveCurrentSession(); qIdx++; updateProgress();
   if(testMode) renderCurrent(); else showRoute();
 }
