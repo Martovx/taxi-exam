@@ -31,6 +31,12 @@ h1{font-size:1.4rem;font-weight:700;text-align:center;margin-bottom:4px}
 .mbtn:hover{border-color:var(--primary)}
 .mbtn-name{font-weight:600;font-size:.95rem}
 .mbtn-count{font-size:.78rem;color:var(--muted);margin-top:2px}
+.bx-row{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:4px}
+.bxbtn{background:var(--card);border:2px solid var(--border);border-radius:var(--r);padding:14px 10px;cursor:pointer;text-align:center;transition:border-color .15s;width:100%}
+.bxbtn:hover{border-color:var(--primary);box-shadow:0 2px 8px rgba(37,99,235,.1)}
+.bxbtn-icon{font-size:1.5rem;margin-bottom:6px}
+.bxbtn-name{font-weight:700;font-size:.95rem;color:var(--primary)}
+.bxbtn-desc{font-size:.72rem;color:var(--muted);margin-top:3px}
 .btn-all{background:var(--primary);color:#fff;border:none;border-radius:var(--r);padding:14px;width:100%;cursor:pointer;font-size:.95rem;font-weight:600;margin-top:14px}
 .btn-all:hover{background:var(--pdk)}
 
@@ -238,16 +244,7 @@ h1{font-size:1.4rem;font-weight:700;text-align:center;margin-bottom:4px}
       <div class="mcard-name">7 Адреса</div>
       <div class="mcard-desc">7 уникални, без повторения</div>
     </div>
-    <div class="mcard" id="btn-b1" onclick="begin('b1')">
-      <div class="mcard-icon">🏨</div>
-      <div class="mcard-name">B1 — Туристически</div>
-      <div class="mcard-desc">3 адреса: Хотели, Спортни, ВУЗ</div>
-    </div>
-    <div class="mcard" id="btn-b2" onclick="begin('b2')">
-      <div class="mcard-icon">🏛️</div>
-      <div class="mcard-name">B2 — Институционални</div>
-      <div class="mcard-desc">3 адреса: Министерства, Важни места, Болници</div>
-    </div>
+
     <div class="mcard" id="btn-route" onclick="begin('route')">
       <div class="mcard-icon">🗺️</div>
       <div class="mcard-name">Маршрут стъпка по стъпка</div>
@@ -926,6 +923,18 @@ function initModules(section){
       btn.onclick=()=>selectModule(mod);
       grid.appendChild(btn);
     });
+    if(sec.key==='addr'){
+      const row=document.createElement('div');
+      row.className='bx-row';
+      const b1=document.createElement('button');
+      b1.className='bxbtn'; b1.onclick=beginB1;
+      b1.innerHTML='<div class="bxbtn-icon">🏨</div><div class="bxbtn-name">B1 — Туристически</div><div class="bxbtn-desc">3 адреса: Хотели · Спортни · ВУЗ</div>';
+      const b2=document.createElement('button');
+      b2.className='bxbtn'; b2.onclick=beginB2;
+      b2.innerHTML='<div class="bxbtn-icon">🏛️</div><div class="bxbtn-name">B2 — Институционални</div><div class="bxbtn-desc">3 адреса: Министерства · Важни места · Болници</div>';
+      row.appendChild(b1); row.appendChild(b2);
+      grid.appendChild(row);
+    }
   });
 }
 function init(){ migrateHistory(); console.log('[taxi] storage:',location.href,Object.keys(localStorage).filter(function(k){return k.indexOf('taxi')===0;})); initModules('all'); }
@@ -942,8 +951,7 @@ function setModeBtns(section){
   document.getElementById('btn-mc').style.display    = (section==='exam'||section==='all')?'':'none';
   document.getElementById('btn-fc').style.display    = (section==='addr'||section==='all')?'':'none';
   document.getElementById('btn-fc7').style.display   = section==='addr'?'':'none';
-  document.getElementById('btn-b1').style.display    = section==='addr'?'':'none';
-  document.getElementById('btn-b2').style.display    = section==='addr'?'':'none';
+
   document.getElementById('btn-route').style.display = section==='route'?'':'none';
 }
 function selectModule(mod){
@@ -1021,6 +1029,16 @@ function completeBack(){
 // ============================================================
 function begin(m){
   mode=m; sessOk=0; sessErr=0; sessTotal=0; currentSessionStart=new Date().toISOString();
+  buildQueue(); qIdx=0; show('s-quiz'); renderCurrent();
+}
+function beginB1(){
+  curSection='addr'; modKey='b1'; weights=getWeights(modKey);
+  mode='b1'; sessOk=0; sessErr=0; sessTotal=0; currentSessionStart=new Date().toISOString();
+  buildQueue(); qIdx=0; show('s-quiz'); renderCurrent();
+}
+function beginB2(){
+  curSection='addr'; modKey='b2'; weights=getWeights(modKey);
+  mode='b2'; sessOk=0; sessErr=0; sessTotal=0; currentSessionStart=new Date().toISOString();
   buildQueue(); qIdx=0; show('s-quiz'); renderCurrent();
 }
 function buildQueue(){
