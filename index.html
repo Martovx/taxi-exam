@@ -935,6 +935,16 @@ function initModules(section){
       btn.onclick=()=>selectModule(mod);
       grid.appendChild(btn);
     });
+    if(sec.key==='route'){
+      ALL.filter(function(q){ return q.m==='Маршрути'; }).forEach(function(q){
+        const rb=document.createElement('button');
+        rb.className='mbtn';
+        const steps=q.a?q.a.split(' → ').length:0;
+        rb.innerHTML='<div class="mbtn-name">'+q.q+'</div><div class="mbtn-count">'+steps+' стъпки</div>';
+        rb.onclick=function(){ beginSpecificRoute(q.id); };
+        grid.appendChild(rb);
+      });
+    }
     if(sec.key==='addr'){
       const b1=document.createElement('button');
       b1.className='mbtn';
@@ -1042,6 +1052,14 @@ function completeBack(){
 // ============================================================
 function begin(m){
   mode=m; sessOk=0; sessErr=0; sessTotal=0; currentSessionStart=new Date().toISOString();
+  buildQueue(); qIdx=0; show('s-quiz'); renderCurrent();
+}
+function beginSpecificRoute(id){
+  const q=ALL.find(function(x){ return x.id===id; });
+  if(!q) return;
+  curMod=[q]; modKey='route_'+id; curSection='route';
+  weights=getWeights(modKey);
+  mode='route'; sessOk=0; sessErr=0; sessTotal=0; currentSessionStart=new Date().toISOString();
   buildQueue(); qIdx=0; show('s-quiz'); renderCurrent();
 }
 function beginB1(){
