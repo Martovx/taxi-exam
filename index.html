@@ -113,6 +113,14 @@ h1{font-size:1.4rem;font-weight:700;text-align:center;margin-bottom:4px}
 .rt-input-row button{padding:10px 14px;background:var(--primary);color:#fff;border:none;border-radius:8px;cursor:pointer;font-size:.9rem;font-weight:600;white-space:nowrap}
 .rt-input-row button:hover{background:var(--pdk)}
 .rt-err-msg{color:var(--err);font-size:.85rem;font-weight:600;margin-bottom:8px;display:none}
+.rt-hint-toggle{width:100%;padding:8px;background:none;border:1.5px solid var(--border);border-radius:8px;cursor:pointer;font-size:.83rem;font-weight:600;color:var(--muted);margin-bottom:8px;text-align:center;transition:all .15s}
+.rt-hint-toggle.active{background:#eff6ff;border-color:var(--primary);color:var(--primary)}
+.rt-hint-opts{display:none;flex-direction:column;gap:8px;margin-bottom:8px}
+.rt-hint-opts.visible{display:flex}
+.rt-hint-opt{padding:11px 14px;background:var(--card);border:2px solid var(--border);border-radius:8px;cursor:pointer;font-size:.9rem;text-align:left;transition:all .15s;font-family:inherit}
+.rt-hint-opt:hover{border-color:var(--primary);background:#eff6ff}
+.rt-hint-opt.ok{border-color:var(--ok);background:#f0fdf4;color:#15803d;cursor:default}
+.rt-hint-opt.err{border-color:var(--err);background:#fef2f2;color:#dc2626;cursor:default}
 .rt-success{background:#f0fdf4;border:2px solid var(--ok);border-radius:var(--r);padding:18px;margin-bottom:12px;display:none}
 .rt-full-route{font-size:.82rem;color:#166534;line-height:2.2;margin:10px 0;word-break:break-word}
 .rt-info-card{background:#f8fafc;border:1px solid var(--border);border-radius:8px;padding:14px;margin-bottom:14px;color:var(--muted);font-size:.9rem;font-style:italic;text-align:center}
@@ -342,12 +350,14 @@ h1{font-size:1.4rem;font-weight:700;text-align:center;margin-bottom:4px}
       <div class="rt-steps-done" id="rt-steps-done"></div>
       <div class="rt-step-counter" id="rt-step-counter"></div>
       <div id="rt-input-area">
-        <div class="rt-input-row">
+        <button id="rt-hint-toggle-btn" class="rt-hint-toggle" onclick="toggleRtHint()">💡 С подсказка</button>
+        <div class="rt-input-row" id="rt-text-row">
           <input type="text" id="rt-input" placeholder="Въведи следващата улица...">
           <button onclick="checkRouteStep()">Провери →</button>
         </div>
+        <div class="rt-hint-opts" id="rt-hint-opts"></div>
         <div id="rt-err-msg" class="rt-err-msg">❌ Грешна улица — опитай пак</div>
-        <button onclick="revealRouteStep()" style="width:100%;padding:9px;background:none;border:2px solid #f97316;color:#ea580c;border-radius:8px;cursor:pointer;font-size:.85rem;font-weight:600;margin-top:4px">👁 Покажи верния отговор</button>
+        <button id="rt-reveal-btn" onclick="revealRouteStep()" style="width:100%;padding:9px;background:none;border:2px solid #f97316;color:#ea580c;border-radius:8px;cursor:pointer;font-size:.85rem;font-weight:600;margin-top:4px">👁 Покажи верния отговор</button>
       </div>
       <div id="rt-reveal-area" style="display:none"></div>
       <div id="rt-success" class="rt-success">
@@ -788,6 +798,7 @@ let fcHintMode = false;
 let currentSessionStart = null;
 let timerInterval = null, timerSec = 0;
 let routeHadError = false, routeRevealedSteps = new Set();
+let routeHintMode = false;
 let testMode = false, testPart1Ok = 0, testPart1Err = 0, testP2AddrPts = 0, testP2RoutePts = 0;
 const TEST_P2 = 20;
 
@@ -1251,10 +1262,15 @@ function renderRoute(q){
     routeHadError=false; routeRevealedSteps=new Set();
     document.getElementById('rt-info').style.display='none';
     document.getElementById('rt-steps-ui').style.display='';
+    const htBtn=document.getElementById('rt-hint-toggle-btn');
+    if(routeHintMode){ htBtn.classList.add('active'); htBtn.textContent='💡 По памет'; } else { htBtn.classList.remove('active'); htBtn.textContent='💡 С подсказка'; }
     document.getElementById('rt-err-msg').style.display='none';
     document.getElementById('rt-success').style.display='none';
     document.getElementById('rt-input-area').style.display='block';
     const inp=document.getElementById('rt-input'); inp.value=''; inp.className='';
+    const tRow=document.getElementById('rt-text-row'); const hOpts=document.getElementById('rt-hint-opts');
+    if(routeHintMode){ tRow.style.display='none'; renderRtHints(); hOpts.classList.add('visible'); } else { tRow.style.display=''; hOpts.classList.remove('visible'); hOpts.innerHTML=''; }
+    if(routeHintMode){ document.getElementById('rt-text-row').style.display='none'; renderRtHints(); document.getElementById('rt-hint-opts').classList.add('visible'); } else { document.getElementById('rt-text-row').style.display=''; }
     const raw=q.q; const midIdx=raw.indexOf(' до ');
     const fromTxt=midIdx>0?raw.slice(0,midIdx).replace(/^От /,''):raw;
     const toTxt=midIdx>0?raw.slice(midIdx+4):'';
@@ -1285,6 +1301,74 @@ function updateRouteDisplay(){
   }
   document.getElementById('rt-step-counter').textContent=
     routeStepIdx<routeSteps.length?'Стъпка '+(routeStepIdx+1)+' от '+routeSteps.length:'';
+  if(routeHintMode&&routeStepIdx<routeSteps.length) renderRtHints();
+}
+function toggleRtHint(){
+  routeHintMode=!routeHintMode;
+  const btn=document.getElementById('rt-hint-toggle-btn');
+  const textRow=document.getElementById('rt-text-row');
+  const opts=document.getElementById('rt-hint-opts');
+  if(routeHintMode){
+    btn.classList.add('active'); btn.textContent='💡 По памет';
+    textRow.style.display='none';
+    document.getElementById('rt-err-msg').style.display='none';
+    renderRtHints();
+    opts.classList.add('visible');
+  } else {
+    btn.classList.remove('active'); btn.textContent='💡 С подсказка';
+    textRow.style.display='';
+    opts.classList.remove('visible'); opts.innerHTML='';
+    document.getElementById('rt-input').focus();
+  }
+}
+function getRtHints(){
+  const correct=routeSteps[routeStepIdx];
+  const allSteps=[];
+  ALL.forEach(function(q){ if(q.m==='Маршрути'&&q.a){ q.a.split(' → ').forEach(function(s){ const t=s.trim(); if(t&&normalizeStreet(t)!==normalizeStreet(correct)) allSteps.push(t); }); } });
+  const shuffled=shuffle(allSteps.filter(function(s,i,a){ return a.findIndex(function(x){ return normalizeStreet(x)===normalizeStreet(s); })===i; }));
+  const decoys=shuffled.slice(0,2);
+  return shuffle([correct].concat(decoys));
+}
+function renderRtHints(){
+  const opts=document.getElementById('rt-hint-opts');
+  opts.innerHTML='';
+  getRtHints().forEach(function(val){
+    const btn=document.createElement('button');
+    btn.className='rt-hint-opt';
+    btn.textContent=val;
+    btn.onclick=function(){ selectRtHint(val, btn, opts); };
+    opts.appendChild(btn);
+  });
+}
+function selectRtHint(val, btn, opts){
+  const correct=routeSteps[routeStepIdx];
+  const isCorrect=normalizeStreet(val)===normalizeStreet(correct);
+  opts.querySelectorAll('.rt-hint-opt').forEach(function(b){ b.onclick=null; });
+  if(isCorrect){
+    btn.classList.add('ok');
+    routeStepIdx++; updateRouteDisplay();
+    if(routeStepIdx>=routeSteps.length){
+      document.getElementById('rt-input-area').style.display='none';
+      document.getElementById('rt-full-route').textContent=routeSteps.map(function(s,i){ return (i+1)+'. '+s; }).join('  →  ');
+      document.getElementById('rt-success').style.display='';
+      if(testMode){ setTimeout(function(){ routeMark(!routeHadError); }, 1200); }
+    }
+  } else {
+    btn.classList.add('err');
+    routeHadError=true; routeRevealedSteps.add(routeStepIdx);
+    opts.querySelectorAll('.rt-hint-opt').forEach(function(b){
+      if(normalizeStreet(b.textContent)===normalizeStreet(correct)) b.classList.add('ok');
+    });
+    setTimeout(function(){
+      routeStepIdx++; updateRouteDisplay();
+      if(routeStepIdx>=routeSteps.length){
+        document.getElementById('rt-input-area').style.display='none';
+        document.getElementById('rt-full-route').textContent=routeSteps.map(function(s,i){ return (i+1)+'. '+s; }).join('  →  ');
+        document.getElementById('rt-success').style.display='';
+        if(testMode){ setTimeout(function(){ routeMark(!routeHadError); }, 1200); }
+      }
+    }, 1000);
+  }
 }
 function checkRouteStep(){
   const inp=document.getElementById('rt-input'); const val=inp.value.trim();
