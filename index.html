@@ -1060,14 +1060,18 @@ function buildQueue(){
     queue=shuffle(curMod.slice()).slice(0,7);
     return;
   }
-  if(mode==='b1'){
-    const pool=ALL.filter(function(q){ return q.type==='fc'&&(q.m==='Адреси: Хотели'||q.m==='Адреси: Спортни обекти'||q.m==='Адреси: Висши учебни заведения'); });
-    queue=shuffle(pool.slice()).slice(0,3);
-    return;
-  }
-  if(mode==='b2'){
-    const pool=ALL.filter(function(q){ return q.type==='fc'&&(q.m==='Адреси: Министерства'||q.m==='Адреси: Важни места'||q.m==='Адреси: Болници'); });
-    queue=shuffle(pool.slice()).slice(0,3);
+  if(mode==='b1'||mode==='b2'){
+    const pool=mode==='b1'
+      ?ALL.filter(function(q){ return q.type==='fc'&&(q.m==='Адреси: Хотели'||q.m==='Адреси: Спортни обекти'||q.m==='Адреси: Висши учебни заведения'); })
+      :ALL.filter(function(q){ return q.type==='fc'&&(q.m==='Адреси: Министерства'||q.m==='Адреси: Важни места'||q.m==='Адреси: Болници'); });
+    const seenKey='taxi_seen_'+mode;
+    let seen=[];
+    try{ seen=JSON.parse(localStorage.getItem(seenKey)||'[]'); }catch(e){}
+    let unseen=pool.filter(function(q){ return seen.indexOf(q.id)===-1; });
+    if(unseen.length<3){ seen=[]; unseen=pool.slice(); localStorage.removeItem(seenKey); }
+    queue=shuffle(unseen.slice()).slice(0,3);
+    const newSeen=seen.concat(queue.map(function(q){ return q.id; }));
+    try{ localStorage.setItem(seenKey,JSON.stringify(newSeen)); }catch(e){}
     return;
   }
   curMod.forEach(q=>{ const w=weights[q.id]||1; for(let i=0;i<Math.ceil(w);i++) queue.push(q); });
