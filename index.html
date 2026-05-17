@@ -956,6 +956,11 @@ function initModules(section){
       b2.innerHTML='<div class="mbtn-name">B2 — Институционални адреси</div><div class="mbtn-count">3 адреса: Министерства · Важни места · Болници</div>';
       b2.onclick=beginB2;
       grid.appendChild(b2);
+      const b12=document.createElement('button');
+      b12.className='mbtn';
+      b12.innerHTML='<div class="mbtn-name">B1 + B2 — Всички адреси</div><div class="mbtn-count">3 туристически + 3 институционални</div>';
+      b12.onclick=beginB1B2;
+      grid.appendChild(b12);
     }
 
   });
@@ -1054,6 +1059,11 @@ function begin(m){
   mode=m; sessOk=0; sessErr=0; sessTotal=0; currentSessionStart=new Date().toISOString();
   buildQueue(); qIdx=0; show('s-quiz'); renderCurrent();
 }
+function beginB1B2(){
+  curSection='addr'; modKey='b1b2'; weights=getWeights(modKey);
+  mode='b1b2'; sessOk=0; sessErr=0; sessTotal=0; currentSessionStart=new Date().toISOString();
+  buildQueue(); qIdx=0; show('s-quiz'); renderCurrent();
+}
 function beginSpecificRoute(id){
   const q=ALL.find(function(x){ return x.id===id; });
   if(!q) return;
@@ -1076,6 +1086,24 @@ function buildQueue(){
   queue=[];
   if(mode==='fc7'){
     queue=shuffle(curMod.slice()).slice(0,7);
+    return;
+  }
+  if(mode==='b1b2'){
+    const instPool=ALL.filter(function(q){ return q.type==='fc'&&(q.m==='Адреси: Министерства'||q.m==='Адреси: Важни места'||q.m==='Адреси: Болници'); });
+    const tourPool=ALL.filter(function(q){ return q.type==='fc'&&(q.m==='Адреси: Хотели'||q.m==='Адреси: Спортни обекти'||q.m==='Адреси: Висши учебни заведения'); });
+    const seenB1Key='taxi_seen_b1'; const seenB2Key='taxi_seen_b2';
+    let seenB1=[],seenB2=[];
+    try{ seenB1=JSON.parse(localStorage.getItem(seenB1Key)||'[]'); }catch(e){}
+    try{ seenB2=JSON.parse(localStorage.getItem(seenB2Key)||'[]'); }catch(e){}
+    let unB1=instPool.filter(function(q){ return seenB1.indexOf(q.id)===-1; });
+    let unB2=tourPool.filter(function(q){ return seenB2.indexOf(q.id)===-1; });
+    if(unB1.length<3){ seenB1=[]; unB1=instPool.slice(); localStorage.removeItem(seenB1Key); }
+    if(unB2.length<3){ seenB2=[]; unB2=tourPool.slice(); localStorage.removeItem(seenB2Key); }
+    const pickB1=shuffle(unB1.slice()).slice(0,3);
+    const pickB2=shuffle(unB2.slice()).slice(0,3);
+    queue=shuffle([...pickB1,...pickB2]);
+    try{ localStorage.setItem(seenB1Key,JSON.stringify(seenB1.concat(pickB1.map(function(q){ return q.id; })))); }catch(e){}
+    try{ localStorage.setItem(seenB2Key,JSON.stringify(seenB2.concat(pickB2.map(function(q){ return q.id; })))); }catch(e){}
     return;
   }
   if(mode==='b1'||mode==='b2'){
