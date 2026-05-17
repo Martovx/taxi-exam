@@ -935,6 +935,18 @@ function initModules(section){
       btn.onclick=()=>selectModule(mod);
       grid.appendChild(btn);
     });
+    if(sec.key==='addr'){
+      const b1=document.createElement('button');
+      b1.className='mbtn';
+      b1.innerHTML='<div class="mbtn-name">B1 — Туристически адреси</div><div class="mbtn-count">3 адреса: Хотели · Спортни · ВУЗ</div>';
+      b1.onclick=beginB1;
+      grid.appendChild(b1);
+      const b2=document.createElement('button');
+      b2.className='mbtn';
+      b2.innerHTML='<div class="mbtn-name">B2 — Институционални адреси</div><div class="mbtn-count">3 адреса: Министерства · Важни места · Болници</div>';
+      b2.onclick=beginB2;
+      grid.appendChild(b2);
+    }
 
   });
 }
