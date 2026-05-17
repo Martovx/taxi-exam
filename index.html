@@ -238,10 +238,15 @@ h1{font-size:1.4rem;font-weight:700;text-align:center;margin-bottom:4px}
       <div class="mcard-name">7 Адреса</div>
       <div class="mcard-desc">7 уникални, без повторения</div>
     </div>
-    <div class="mcard" id="btn-fc6" onclick="begin('fc6')">
-      <div class="mcard-icon">📋</div>
-      <div class="mcard-name">6 Адреса (изпит)</div>
-      <div class="mcard-desc">3 институционални + 3 туристически</div>
+    <div class="mcard" id="btn-b1" onclick="begin('b1')">
+      <div class="mcard-icon">🏨</div>
+      <div class="mcard-name">B1 — Туристически</div>
+      <div class="mcard-desc">3 адреса: Хотели, Спортни, ВУЗ</div>
+    </div>
+    <div class="mcard" id="btn-b2" onclick="begin('b2')">
+      <div class="mcard-icon">🏛️</div>
+      <div class="mcard-name">B2 — Институционални</div>
+      <div class="mcard-desc">3 адреса: Министерства, Важни места, Болници</div>
     </div>
     <div class="mcard" id="btn-route" onclick="begin('route')">
       <div class="mcard-icon">🗺️</div>
@@ -937,7 +942,8 @@ function setModeBtns(section){
   document.getElementById('btn-mc').style.display    = (section==='exam'||section==='all')?'':'none';
   document.getElementById('btn-fc').style.display    = (section==='addr'||section==='all')?'':'none';
   document.getElementById('btn-fc7').style.display   = section==='addr'?'':'none';
-  document.getElementById('btn-fc6').style.display   = section==='addr'?'':'none';
+  document.getElementById('btn-b1').style.display    = section==='addr'?'':'none';
+  document.getElementById('btn-b2').style.display    = section==='addr'?'':'none';
   document.getElementById('btn-route').style.display = section==='route'?'':'none';
 }
 function selectModule(mod){
@@ -1023,12 +1029,14 @@ function buildQueue(){
     queue=shuffle(curMod.slice()).slice(0,7);
     return;
   }
-  if(mode==='fc6'){
-    const instPool=ALL.filter(function(q){ return q.type==='fc'&&(q.m==='Адреси: Министерства'||q.m==='Адреси: Важни места'||q.m==='Адреси: Болници'); });
-    const tourPool=ALL.filter(function(q){ return q.type==='fc'&&(q.m==='Адреси: Хотели'||q.m==='Адреси: Спортни обекти'||q.m==='Адреси: Висши учебни заведения'); });
-    const inst=shuffle(instPool.slice()).slice(0,3);
-    const tour=shuffle(tourPool.slice()).slice(0,3);
-    queue=shuffle([...inst,...tour]);
+  if(mode==='b1'){
+    const pool=ALL.filter(function(q){ return q.type==='fc'&&(q.m==='Адреси: Хотели'||q.m==='Адреси: Спортни обекти'||q.m==='Адреси: Висши учебни заведения'); });
+    queue=shuffle(pool.slice()).slice(0,3);
+    return;
+  }
+  if(mode==='b2'){
+    const pool=ALL.filter(function(q){ return q.type==='fc'&&(q.m==='Адреси: Министерства'||q.m==='Адреси: Важни места'||q.m==='Адреси: Болници'); });
+    queue=shuffle(pool.slice()).slice(0,3);
     return;
   }
   curMod.forEach(q=>{ const w=weights[q.id]||1; for(let i=0;i<Math.ceil(w);i++) queue.push(q); });
