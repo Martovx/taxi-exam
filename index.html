@@ -146,6 +146,9 @@ h1{font-size:1.4rem;font-weight:700;text-align:center;margin-bottom:4px}
 .home-btn.test-btn{border-color:#fdba74}
 .home-btn.test-btn:hover{border-color:#f97316;box-shadow:0 2px 8px rgba(249,115,22,.15)}
 .home-btn.test-btn .home-btn-name{color:#ea580c}
+.home-btn.mctest-btn{border-color:#a5b4fc}
+.home-btn.mctest-btn:hover{border-color:#6366f1;box-shadow:0 2px 8px rgba(99,102,241,.15)}
+.home-btn.mctest-btn .home-btn-name{color:#4f46e5}
 
 .pbar-part{font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--primary);text-align:center;margin-bottom:6px;padding:4px 10px;background:#eff6ff;border-radius:6px}
 
@@ -197,6 +200,11 @@ h1{font-size:1.4rem;font-weight:700;text-align:center;margin-bottom:4px}
       <div class="home-btn-icon">📝</div>
       <div class="home-btn-name">Тест</div>
       <div class="home-btn-desc">Симулирай реален изпит — 20 въпроса + адреси + маршрут</div>
+    </button>
+    <button class="home-btn mctest-btn" onclick="beginMCTest()">
+      <div class="home-btn-icon">🔢</div>
+      <div class="home-btn-name">Тест — Само въпроси</div>
+      <div class="home-btn-desc">20 въпроса от всички модули, разбъркани</div>
     </button>
   </div>
 </div>
@@ -776,7 +784,7 @@ const ALL = [
 {"id":315,"m":"Адреси: Висши учебни заведения","type":"fc","q":"Висше транспортно училище (ВТУ) „Тодор Каблешков\"","a":"ул. Гео Милев 158"},
 {"id":316,"m":"Адреси: Висши учебни заведения","type":"fc","q":"Медицински университет – София","a":"ул. академик Иван Евстатиев Гешов 15"},
 {"id":400,"m":"Маршрути","q":"От Министерството на транспорта и съобщенията (МТС) до Хотел „Спа Хотел Драгалевци\"","a":"ул. „Дякон Игнатий\" → ул. „Ген. Гурко\" → ул. „Г. С. Раковски\" → бул. „Патриарх Евтимий\" → ул. „Проф. Фритьоф Нансен\" → бул. „Черни връх\" → ул. „Папрат\" → ул. „Глухарче\" → ул. „Карнобатски проход\"","map":"maps/Map-400.png"},
-{"id":401,"m":"Маршрути","q":"От 07мо РУ - СДВР до Централна Ж.П. Гара - София","a":"алея „Флойд Бляк\" → ул. „Александър Малинов\" → бул. „Брюксел\" → бул. „Цариградско шосе\" → бул. „Михай Еминеску\" → бул. „Ситняково\" → бул. „Ген. Данаил Николаев\" → пл. „Сточна Гара\" → бул. „Сливница\" → пл. „Лъвов Мост\" → бул. „Княгиня Мария Луиза\"","map":"maps/Map-401.png"},
+{"id":401,"m":"Маршрути","q":"От 07мо РУ - СДВР до Централна Ж.П. Гара - София","a":"алея „Флойд Бляк\" → бул. „Александър Малинов\" → бул. „Брюксел\" → бул. „Цариградско шосе\" → бул. „Михай Еминеску\" → бул. „Ситняково\" → бул. „Ген. Данаил Николаев\" → пл. „Сточна Гара\" → бул. „Сливница\" → пл. „Лъвов Мост\" → бул. „Княгиня Мария Луиза\"","map":"maps/Map-401.png"},
 {"id":402,"m":"Маршрути","q":"От Аерогара София „Терминал 2\" до Национална многопрофилна транспортна болница „Цар Борис III\" гр. София","a":"ул. „Продан Таракчиев\" → ул. „Мими Балканска\" → ул. „Източна тангента\" → ул. „511-ти\" → ул. „Мими Балканска\" → ул. „Витиня\" → ул. „д-р Иван Селимински\" → ул. „Витиня\" → бул. „Ботевградско Шосе\" → бул. „Мадрид\" → бул. „Ген. Данаил Николаев\" → пл. „Сточна Гара\" → бул. „Сливница\" → пл. „Лъвов Мост\" → бул. „Княгиня Мария Луиза\"","map":"maps/Map-402.png"},
 {"id":403,"m":"Маршрути","q":"От Аерогара София „Терминал 1\" до Хотел Надежда гр. София","a":"бул. „Брюксел\" → ул. „Мими Балканска\" → ул. „Източна тангента\" → ул. „511-ти\" → ул. „Мими Балканска\" → ул. „Витиня\" → ул. „д-р Иван Селимински\" → ул. „Витиня\" → бул. „Ботевградско Шосе\" → бул. „Мадрид\" → бул. „Ген. Данаил Николаев\" → пл. „Сточна Гара\" → ул. „Константин Стоилов\" → ул. „Каменоделска\" → ул. „Грънчарска\" → бул. „История Славянобългарска\" → бул. „Ломско шосе\" → ул. „Хан Кубрат\"","map":"maps/Map-403.png"},
 {"id":404,"m":"Маршрути","q":"От Министерството на околна среда и водите до Аджибадем Сити Клиник-болница „Токуда\" (Входът е от ул. „Атанас Дуков\")","a":"бул. „Княгиня Мария Луиза\" → пл. „Независимост\" → пл. „Атанас Буров\" → бул. „Княз Александър I\" → бул. „Цар Освободител\" → пл. „Орлов Мост\" → бул. „Цариградско Шосе\" → бул. „Пейо К. Яворов\" → бул. „Никола Й. Вапцаров\" → ул. „Атанас Дуков\"","map":"maps/Map-404.png"},
@@ -993,6 +1001,13 @@ function selectModule(mod){
 // ============================================================
 // TEST MODE
 // ============================================================
+function beginMCTest(){
+  testMode=false; mode='mctest';
+  sessOk=0; sessErr=0; sessTotal=0; currentSessionStart=new Date().toISOString();
+  modKey='mctest'; weights={};
+  buildQueue(); qIdx=0;
+  show('s-quiz'); renderCurrent();
+}
 function beginTest(){
   testMode=true; testPart1Ok=0; testPart1Err=0; testP2AddrPts=0; testP2RoutePts=0;
   sessOk=0; sessErr=0; sessTotal=0; currentSessionStart=new Date().toISOString(); qIdx=0; modKey='test'; weights={};
@@ -1015,6 +1030,7 @@ function beginTest(){
 }
 function quizBack(){
   if(testMode){ testMode=false; stopTimer(); document.getElementById('pbar-part').style.display='none'; show('s-home'); }
+  else if(mode==='mctest'){ show('s-home'); }
   else show('s-mode');
 }
 function showTestModal(){
@@ -1084,6 +1100,13 @@ function beginB2(){
 }
 function buildQueue(){
   queue=[];
+  if(mode==='mctest'){
+    const dist=[['Модул 1',6],['Модул 2',3],['Модул 3',3],['Модул 4',4],['Модул 5',4]];
+    queue=shuffle(dist.reduce(function(acc,d){
+      return acc.concat(shuffle(ALL.filter(function(q){ return q.m&&q.m.startsWith(d[0]); })).slice(0,d[1]));
+    },[]));
+    return;
+  }
   if(mode==='fc7'){
     queue=shuffle(curMod.slice()).slice(0,7);
     return;
